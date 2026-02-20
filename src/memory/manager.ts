@@ -2794,6 +2794,9 @@ export class MemoryIndexManager implements MemorySearchManager {
       "type:milestone",
     ]);
 
+    // Collect which facts to expire before modifying anything
+    const toExpire: Array<{ id: string; entity: string; attribute: string; reason: string }> = [];
+
     for (const fact of facts) {
       const tags: string[] = fact.tags ? (JSON.parse(fact.tags) as string[]) : [];
       const ageMs = now.getTime() - new Date(fact.created_at).getTime();
@@ -2809,52 +2812,58 @@ export class MemoryIndexManager implements MemorySearchManager {
         continue;
       }
 
-      let shouldInvalidate = false;
       let reason = "";
 
       // type:debug, type:error → 14 days (unless tagged root-cause)
       if (tags.includes("type:debug") || tags.includes("type:error")) {
         if (ageDays > 14 && !tags.includes("root-cause")) {
-          shouldInvalidate = true;
           reason = "debug/error fact older than 14 days";
         }
       }
       // type:observation → 30 days unless promoted
       else if (tags.includes("type:observation")) {
         if (ageDays > 30) {
-          shouldInvalidate = true;
           reason = "observation older than 30 days without promotion";
         }
       }
       // type:session-context → 30 days
       else if (tags.includes("type:session-context")) {
         if (ageDays > 30) {
-          shouldInvalidate = true;
           reason = "session-context older than 30 days";
         }
       }
       // type:commitment, type:todo → 90 days
       else if (tags.includes("type:commitment") || tags.includes("type:todo")) {
         if (ageDays > 90) {
-          shouldInvalidate = true;
           reason = "commitment/todo older than 90 days";
         }
       }
-      // Untagged or other → 60 days with 0 references → reduce confidence
+      // Untagged or other → 60 days with 0 references
       else if (ageDays > 60 && fact.reference_count === 0) {
-        shouldInvalidate = true;
         reason = "unreferenced fact older than 60 days";
       }
 
-      if (shouldInvalidate) {
-        try {
-          invalidateStmt.run(nowIso, fact.id);
-          deleteFtsStmt.run(fact.id);
+      if (reason) {
+        toExpire.push({ id: fact.id, entity: fact.entity, attribute: fact.attribute, reason });
+      }
+    }
+
+    // Apply all expirations in a single transaction
+    if (toExpire.length > 0) {
+      try {
+        this.db.exec("BEGIN");
+        for (const item of toExpire) {
+          invalidateStmt.run(nowIso, item.id);
+          deleteFtsStmt.run(item.id);
           invalidated++;
-          details.push(`Expired: ${fact.entity}/${fact.attribute} (${reason})`);
-        } catch {
-          // Skip individual failures
+          details.push(`Expired: ${item.entity}/${item.attribute} (${item.reason})`);
         }
+        this.db.exec("COMMIT");
+      } catch (err) {
+        try {
+          this.db.exec("ROLLBACK");
+        } catch {}
+        throw err;
       }
     }
 
