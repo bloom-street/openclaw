@@ -182,15 +182,32 @@ export class MemoryIndexManager implements MemorySearchManager {
     if (existing) {
       return existing;
     }
-    const providerResult = await createEmbeddingProvider({
-      config: cfg,
-      agentDir: resolveAgentDir(cfg, agentId),
-      provider: settings.provider,
-      remote: settings.remote,
-      model: settings.model,
-      fallback: settings.fallback,
-      local: settings.local,
-    });
+    let providerResult: EmbeddingProviderResult;
+    try {
+      providerResult = await createEmbeddingProvider({
+        config: cfg,
+        agentDir: resolveAgentDir(cfg, agentId),
+        provider: settings.provider,
+        remote: settings.remote,
+        model: settings.model,
+        fallback: settings.fallback,
+        local: settings.local,
+      });
+    } catch {
+      // Embedding provider unavailable (no API keys). Create a no-op provider
+      // so fact-store operations (FTS5-only) still work. Chunk-based memory
+      // search with embeddings will be degraded.
+      const noopEmbed = async () => [] as number[];
+      providerResult = {
+        provider: {
+          id: "none",
+          model: "none",
+          embedQuery: noopEmbed,
+          embedBatch: async (texts: string[]) => texts.map(() => []),
+        },
+        requestedProvider: settings.provider,
+      };
+    }
     const manager = new MemoryIndexManager({
       cacheKey: key,
       cfg,
