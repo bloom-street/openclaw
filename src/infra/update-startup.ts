@@ -48,15 +48,8 @@ export async function runGatewayUpdateCheck(params: {
   isNixMode: boolean;
   allowInTests?: boolean;
 }): Promise<void> {
-  if (shouldSkipCheck(Boolean(params.allowInTests))) {
-    return;
-  }
-  if (params.isNixMode) {
-    return;
-  }
-  if (params.cfg.update?.checkOnStart === false) {
-    return;
-  }
+  // OpenPulse fork: update checks permanently disabled — no phone-home to upstream
+  return;
 
   const statePath = path.join(resolveStateDir(), UPDATE_CHECK_FILENAME);
   const state = await readState(statePath);
