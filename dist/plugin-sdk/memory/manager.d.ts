@@ -133,4 +133,116 @@ export declare class MemoryIndexManager implements MemorySearchManager {
     private runBatchWithFallback;
     private getIndexConcurrency;
     private indexFile;
+    /** Returns the workspace directory path for file operations. */
+    getWorkspaceDir(): string;
+    /** Save a structured fact. Handles dedup and temporal invalidation. */
+    saveFact(params: {
+        entity: string;
+        attribute: string;
+        value: string;
+        tags?: string[];
+        confidence?: number;
+        source?: string;
+        sourceConversationId?: string;
+    }): {
+        id: string;
+        message: string;
+        action: "created" | "already_known" | "superseded";
+    };
+    /** Search facts using FTS5 with optional filters. Bumps reference counts. */
+    searchFacts(params: {
+        query: string;
+        entity?: string;
+        tags?: string[];
+        includeHistorical?: boolean;
+        limit?: number;
+    }): {
+        results: FactResult[];
+        count: number;
+    };
+    /** Check when the last consolidation of a given type ran. */
+    getLastConsolidation(type: string): ConsolidationLogEntry | null;
+    /** Write a consolidation log entry. */
+    logConsolidation(params: {
+        type: string;
+        sessionId?: string;
+        factsAdded?: number;
+        factsUpdated?: number;
+        factsInvalidated?: number;
+        startedAt: string;
+        completedAt?: string;
+        modelUsed?: string;
+        tokensUsed?: number;
+    }): string;
+    /** Get stats about the fact store. */
+    getFactStats(): FactStoreStats;
+    /**
+     * Find duplicate facts: current facts sharing the same entity+attribute.
+     * Returns groups where multiple current facts exist for a single entity+attribute pair.
+     */
+    findDuplicateFacts(): DuplicateFactGroup[];
+    /**
+     * Apply expiry policies to stale facts. Returns counts of invalidated facts.
+     * Rules based on tag categories and reference counts.
+     */
+    applyFactExpiry(): {
+        invalidated: number;
+        details: string[];
+    };
+    /** Get current facts for review, optionally filtered by creation date range. */
+    getRecentFacts(params?: {
+        since?: string;
+        limit?: number;
+    }): FactResult[];
 }
+export type FactResult = {
+    id: string;
+    entity: string;
+    attribute: string;
+    value: string;
+    tags: string[];
+    confidence: number;
+    valid_from: string;
+    valid_to?: string;
+    superseded_by?: string;
+    source: string;
+    reference_count: number;
+    created_at: string;
+};
+export type FactStoreStats = {
+    total: number;
+    current: number;
+    superseded: number;
+    unreferenced: number;
+    createdToday: number;
+    topEntities: Array<{
+        entity: string;
+        count: number;
+    }>;
+};
+export type DuplicateFactGroup = {
+    entity: string;
+    attribute: string;
+    facts: Array<{
+        id: string;
+        value: string;
+        tags: string[];
+        confidence: number;
+        valid_from: string;
+        source: string;
+        reference_count: number;
+        created_at: string;
+    }>;
+};
+export type ConsolidationLogEntry = {
+    id: string;
+    type: string;
+    sessionId: string | null;
+    factsAdded: number;
+    factsUpdated: number;
+    factsInvalidated: number;
+    startedAt: string;
+    completedAt: string | null;
+    modelUsed: string | null;
+    tokensUsed: number | null;
+};

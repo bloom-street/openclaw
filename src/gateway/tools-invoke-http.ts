@@ -38,6 +38,7 @@ const MEMORY_TOOL_NAMES = new Set([
   "memory_save_fact",
   "memory_search_facts",
   "memory_update_core",
+  "memory_consolidate",
 ]);
 
 type ToolsInvokeBody = {

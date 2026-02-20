@@ -5,7 +5,7 @@ import path from "node:path";
 import fs, { createWriteStream, existsSync, statSync } from "node:fs";
 import os, { homedir } from "node:os";
 import { Logger } from "tslog";
-import JSON5 from "json5";
+import json5 from "json5";
 import chalk, { Chalk } from "chalk";
 import fs$1 from "node:fs/promises";
 import { execFile, execFileSync, spawn } from "node:child_process";
@@ -2325,7 +2325,7 @@ function readLoggingConfig() {
 	try {
 		if (!fs.existsSync(configPath)) return;
 		const raw = fs.readFileSync(configPath, "utf-8");
-		const logging = JSON5.parse(raw)?.logging;
+		const logging = json5.parse(raw)?.logging;
 		if (!logging || typeof logging !== "object" || Array.isArray(logging)) return;
 		return logging;
 	} catch {
@@ -8363,7 +8363,7 @@ var IncludeProcessor = class IncludeProcessor {
 };
 const defaultResolver = {
 	readFile: (p) => fs.readFileSync(p, "utf-8"),
-	parseJson: (raw) => JSON5.parse(raw)
+	parseJson: (raw) => json5.parse(raw)
 };
 /**
 * Resolves all $include directives in a parsed config object.
@@ -11009,18 +11009,18 @@ function resolveConfigPathForDeps(deps) {
 function normalizeDeps(overrides = {}) {
 	return {
 		fs: overrides.fs ?? fs,
-		json5: overrides.json5 ?? JSON5,
+		json5: overrides.json5 ?? json5,
 		env: overrides.env ?? process.env,
 		homedir: overrides.homedir ?? (() => resolveRequiredHomeDir(overrides.env ?? process.env, os.homedir)),
 		configPath: overrides.configPath ?? "",
 		logger: overrides.logger ?? console
 	};
 }
-function parseConfigJson5(raw, json5 = JSON5) {
+function parseConfigJson5(raw, json5$1 = json5) {
 	try {
 		return {
 			ok: true,
-			parsed: json5.parse(raw)
+			parsed: json5$1.parse(raw)
 		};
 	} catch (err) {
 		return {
@@ -11531,7 +11531,7 @@ function loadSessionStore(storePath, opts = {}) {
 	let mtimeMs = getFileMtimeMs(storePath);
 	try {
 		const raw = fs.readFileSync(storePath, "utf-8");
-		const parsed = JSON5.parse(raw);
+		const parsed = json5.parse(raw);
 		if (isSessionStoreRecord(parsed)) store = parsed;
 		mtimeMs = getFileMtimeMs(storePath) ?? mtimeMs;
 	} catch {}
@@ -18706,6 +18706,34 @@ var tool_display_default = {
 				"lines"
 			]
 		},
+		"memory_save_fact": {
+			"emoji": "💾",
+			"title": "Save Fact",
+			"detailKeys": [
+				"entity",
+				"attribute",
+				"value"
+			]
+		},
+		"memory_search_facts": {
+			"emoji": "🔍",
+			"title": "Search Facts",
+			"detailKeys": ["query", "entity"]
+		},
+		"memory_update_core": {
+			"emoji": "📝",
+			"title": "Update Core Memory",
+			"detailKeys": [
+				"file",
+				"action",
+				"section"
+			]
+		},
+		"memory_consolidate": {
+			"emoji": "🧹",
+			"title": "Consolidate Memory",
+			"detailKeys": ["scope"]
+		},
 		"web_search": {
 			"emoji": "🔎",
 			"title": "Web Search",
@@ -18867,6 +18895,42 @@ const EMBEDDING_QUERY_TIMEOUT_LOCAL_MS = 5 * 6e4;
 const EMBEDDING_BATCH_TIMEOUT_REMOTE_MS = 2 * 6e4;
 const EMBEDDING_BATCH_TIMEOUT_LOCAL_MS = 10 * 6e4;
 const log$11 = createSubsystemLogger("memory");
+
+//#endregion
+//#region src/agents/tools/facts-tool.ts
+const SaveFactSchema = Type.Object({
+	entity: Type.String(),
+	attribute: Type.String(),
+	value: Type.String(),
+	tags: Type.Optional(Type.Array(Type.String())),
+	confidence: Type.Optional(Type.Number())
+});
+const SearchFactsSchema = Type.Object({
+	query: Type.String(),
+	entity: Type.Optional(Type.String()),
+	tags: Type.Optional(Type.Array(Type.String())),
+	include_historical: Type.Optional(Type.Boolean()),
+	limit: Type.Optional(Type.Number())
+});
+const UpdateCoreSchema = Type.Object({
+	file: Type.Union([Type.Literal("USER.md"), Type.Literal("MEMORY.md")]),
+	action: Type.Union([
+		Type.Literal("append_section"),
+		Type.Literal("replace_section"),
+		Type.Literal("append_line"),
+		Type.Literal("rewrite")
+	]),
+	section: Type.Optional(Type.String()),
+	content: Type.String()
+});
+
+//#endregion
+//#region src/agents/tools/consolidation-tool.ts
+const ConsolidateSchema = Type.Object({ scope: Type.Union([
+	Type.Literal("post_session"),
+	Type.Literal("daily"),
+	Type.Literal("weekly")
+]) });
 
 //#endregion
 //#region src/memory/search-manager.ts

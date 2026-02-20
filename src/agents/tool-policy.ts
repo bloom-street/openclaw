@@ -20,6 +20,7 @@ export const TOOL_GROUPS: Record<string, string[]> = {
     "memory_save_fact",
     "memory_search_facts",
     "memory_update_core",
+    "memory_consolidate",
   ],
   "group:web": ["web_search", "web_fetch"],
   // Basic workspace/file tools
@@ -61,6 +62,7 @@ export const TOOL_GROUPS: Record<string, string[]> = {
     "memory_save_fact",
     "memory_search_facts",
     "memory_update_core",
+    "memory_consolidate",
     "web_search",
     "web_fetch",
     "image",

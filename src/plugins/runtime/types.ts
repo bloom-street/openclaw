@@ -90,6 +90,8 @@ type CreateMemorySearchFactsTool =
   typeof import("../../agents/tools/facts-tool.js").createMemorySearchFactsTool;
 type CreateMemoryUpdateCoreTool =
   typeof import("../../agents/tools/facts-tool.js").createMemoryUpdateCoreTool;
+type CreateMemoryConsolidateTool =
+  typeof import("../../agents/tools/consolidation-tool.js").createMemoryConsolidateTool;
 type RegisterMemoryCli = typeof import("../../cli/memory-cli.js").registerMemoryCli;
 type DiscordMessageActions =
   typeof import("../../channels/plugins/actions/discord.js").discordMessageActions;
@@ -209,6 +211,7 @@ export type PluginRuntime = {
     createMemorySaveFactTool: CreateMemorySaveFactTool;
     createMemorySearchFactsTool: CreateMemorySearchFactsTool;
     createMemoryUpdateCoreTool: CreateMemoryUpdateCoreTool;
+    createMemoryConsolidateTool: CreateMemoryConsolidateTool;
     registerMemoryCli: RegisterMemoryCli;
   };
   channel: {

@@ -2604,6 +2604,296 @@ export class MemoryIndexManager implements MemorySearchManager {
 
     return { results, count: results.length };
   }
+
+  // ── Consolidation Operations ──────────────────────────────────────
+
+  /** Check when the last consolidation of a given type ran. */
+  getLastConsolidation(type: string): ConsolidationLogEntry | null {
+    const row = this.db
+      .prepare(
+        `SELECT id, type, session_id, facts_added, facts_updated, facts_invalidated,
+                started_at, completed_at, model_used, tokens_used
+         FROM consolidation_log WHERE type = ? ORDER BY started_at DESC LIMIT 1`,
+      )
+      .get(type) as ConsolidationLogRow | undefined;
+    return row ? mapConsolidationRow(row) : null;
+  }
+
+  /** Write a consolidation log entry. */
+  logConsolidation(params: {
+    type: string;
+    sessionId?: string;
+    factsAdded?: number;
+    factsUpdated?: number;
+    factsInvalidated?: number;
+    startedAt: string;
+    completedAt?: string;
+    modelUsed?: string;
+    tokensUsed?: number;
+  }): string {
+    const id = randomUUID();
+    this.db
+      .prepare(
+        `INSERT INTO consolidation_log (id, type, session_id, facts_added, facts_updated, facts_invalidated, started_at, completed_at, model_used, tokens_used)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .run(
+        id,
+        params.type,
+        params.sessionId ?? null,
+        params.factsAdded ?? 0,
+        params.factsUpdated ?? 0,
+        params.factsInvalidated ?? 0,
+        params.startedAt,
+        params.completedAt ?? null,
+        params.modelUsed ?? null,
+        params.tokensUsed ?? null,
+      );
+    return id;
+  }
+
+  /** Get stats about the fact store. */
+  getFactStats(): FactStoreStats {
+    const total = (this.db.prepare(`SELECT COUNT(*) AS cnt FROM facts`).get() as { cnt: number })
+      .cnt;
+    const current = (
+      this.db.prepare(`SELECT COUNT(*) AS cnt FROM facts WHERE valid_to IS NULL`).get() as {
+        cnt: number;
+      }
+    ).cnt;
+    const superseded = total - current;
+
+    // Entity distribution
+    const entityRows = this.db
+      .prepare(
+        `SELECT entity, COUNT(*) AS cnt FROM facts WHERE valid_to IS NULL GROUP BY entity ORDER BY cnt DESC LIMIT 20`,
+      )
+      .all() as Array<{ entity: string; cnt: number }>;
+
+    // Facts with zero references (potential stale)
+    const unreferenced = (
+      this.db
+        .prepare(`SELECT COUNT(*) AS cnt FROM facts WHERE valid_to IS NULL AND reference_count = 0`)
+        .get() as { cnt: number }
+    ).cnt;
+
+    // Facts created today
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const createdToday = (
+      this.db
+        .prepare(`SELECT COUNT(*) AS cnt FROM facts WHERE created_at >= ?`)
+        .get(todayStart.toISOString()) as { cnt: number }
+    ).cnt;
+
+    return {
+      total,
+      current,
+      superseded,
+      unreferenced,
+      createdToday,
+      topEntities: entityRows.map((r) => ({ entity: r.entity, count: r.cnt })),
+    };
+  }
+
+  /**
+   * Find duplicate facts: current facts sharing the same entity+attribute.
+   * Returns groups where multiple current facts exist for a single entity+attribute pair.
+   */
+  findDuplicateFacts(): DuplicateFactGroup[] {
+    const rows = this.db
+      .prepare(
+        `SELECT f.id, f.entity, f.attribute, f.value, f.tags, f.confidence,
+                f.valid_from, f.source, f.reference_count, f.created_at
+         FROM facts f
+         WHERE f.valid_to IS NULL
+           AND EXISTS (
+             SELECT 1 FROM facts f2
+             WHERE f2.entity = f.entity AND f2.attribute = f.attribute
+               AND f2.valid_to IS NULL AND f2.id != f.id
+           )
+         ORDER BY f.entity, f.attribute, f.created_at DESC`,
+      )
+      .all() as Array<{
+      id: string;
+      entity: string;
+      attribute: string;
+      value: string;
+      tags: string | null;
+      confidence: number;
+      valid_from: string;
+      source: string;
+      reference_count: number;
+      created_at: string;
+    }>;
+
+    // Group by entity+attribute
+    const groups = new Map<string, DuplicateFactGroup>();
+    for (const row of rows) {
+      const key = `${row.entity}::${row.attribute}`;
+      if (!groups.has(key)) {
+        groups.set(key, { entity: row.entity, attribute: row.attribute, facts: [] });
+      }
+      groups.get(key)!.facts.push({
+        id: row.id,
+        value: row.value,
+        tags: row.tags ? (JSON.parse(row.tags) as string[]) : [],
+        confidence: row.confidence,
+        valid_from: row.valid_from,
+        source: row.source,
+        reference_count: row.reference_count,
+        created_at: row.created_at,
+      });
+    }
+
+    return Array.from(groups.values());
+  }
+
+  /**
+   * Apply expiry policies to stale facts. Returns counts of invalidated facts.
+   * Rules based on tag categories and reference counts.
+   */
+  applyFactExpiry(): { invalidated: number; details: string[] } {
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const details: string[] = [];
+    let invalidated = 0;
+
+    // Get all current facts with their metadata
+    const facts = this.db
+      .prepare(
+        `SELECT id, entity, attribute, tags, reference_count, last_referenced_at, created_at
+         FROM facts WHERE valid_to IS NULL`,
+      )
+      .all() as Array<{
+      id: string;
+      entity: string;
+      attribute: string;
+      tags: string | null;
+      reference_count: number;
+      last_referenced_at: string | null;
+      created_at: string;
+    }>;
+
+    const invalidateStmt = this.db.prepare(
+      `UPDATE facts SET valid_to = ?, superseded_by = 'expired' WHERE id = ?`,
+    );
+    const deleteFtsStmt = this.db.prepare(`DELETE FROM facts_fts WHERE fact_id = ?`);
+
+    // Never-expire tags
+    const neverExpireTags = new Set([
+      "type:decision",
+      "type:preference",
+      "type:person",
+      "type:important-date",
+      "type:emotion",
+      "type:feeling",
+      "type:place",
+      "type:routine",
+      "type:pattern",
+      "type:milestone",
+    ]);
+
+    for (const fact of facts) {
+      const tags: string[] = fact.tags ? (JSON.parse(fact.tags) as string[]) : [];
+      const ageMs = now.getTime() - new Date(fact.created_at).getTime();
+      const ageDays = ageMs / (1000 * 60 * 60 * 24);
+
+      // Skip facts with never-expire tags
+      if (tags.some((t) => neverExpireTags.has(t))) {
+        continue;
+      }
+
+      // Referenced 3+ times = protected regardless of age
+      if (fact.reference_count >= 3) {
+        continue;
+      }
+
+      let shouldInvalidate = false;
+      let reason = "";
+
+      // type:debug, type:error → 14 days (unless tagged root-cause)
+      if (tags.includes("type:debug") || tags.includes("type:error")) {
+        if (ageDays > 14 && !tags.includes("root-cause")) {
+          shouldInvalidate = true;
+          reason = "debug/error fact older than 14 days";
+        }
+      }
+      // type:observation → 30 days unless promoted
+      else if (tags.includes("type:observation")) {
+        if (ageDays > 30) {
+          shouldInvalidate = true;
+          reason = "observation older than 30 days without promotion";
+        }
+      }
+      // type:session-context → 30 days
+      else if (tags.includes("type:session-context")) {
+        if (ageDays > 30) {
+          shouldInvalidate = true;
+          reason = "session-context older than 30 days";
+        }
+      }
+      // type:commitment, type:todo → 90 days
+      else if (tags.includes("type:commitment") || tags.includes("type:todo")) {
+        if (ageDays > 90) {
+          shouldInvalidate = true;
+          reason = "commitment/todo older than 90 days";
+        }
+      }
+      // Untagged or other → 60 days with 0 references → reduce confidence
+      else if (ageDays > 60 && fact.reference_count === 0) {
+        shouldInvalidate = true;
+        reason = "unreferenced fact older than 60 days";
+      }
+
+      if (shouldInvalidate) {
+        try {
+          invalidateStmt.run(nowIso, fact.id);
+          deleteFtsStmt.run(fact.id);
+          invalidated++;
+          details.push(`Expired: ${fact.entity}/${fact.attribute} (${reason})`);
+        } catch {
+          // Skip individual failures
+        }
+      }
+    }
+
+    return { invalidated, details };
+  }
+
+  /** Get current facts for review, optionally filtered by creation date range. */
+  getRecentFacts(params?: { since?: string; limit?: number }): FactResult[] {
+    const limit = Math.min(params?.limit ?? 50, 200);
+    let sql =
+      `SELECT id, entity, attribute, value, tags, confidence, valid_from, valid_to,` +
+      ` superseded_by, source, reference_count, last_referenced_at, created_at` +
+      ` FROM facts WHERE valid_to IS NULL`;
+    const sqlParams: (string | number)[] = [];
+
+    if (params?.since) {
+      sql += ` AND created_at >= ?`;
+      sqlParams.push(params.since);
+    }
+
+    sql += ` ORDER BY created_at DESC LIMIT ?`;
+    sqlParams.push(limit);
+
+    const rows = this.db.prepare(sql).all(...sqlParams) as FactRow[];
+    return rows.map((row) => ({
+      id: row.id,
+      entity: row.entity,
+      attribute: row.attribute,
+      value: row.value,
+      tags: row.tags ? (JSON.parse(row.tags) as string[]) : [],
+      confidence: row.confidence,
+      valid_from: row.valid_from,
+      valid_to: row.valid_to ?? undefined,
+      superseded_by: row.superseded_by ?? undefined,
+      source: row.source,
+      reference_count: row.reference_count,
+      created_at: row.created_at,
+    }));
+  }
 }
 
 // ── Fact Types ────────────────────────────────────────────────────
@@ -2639,3 +2929,68 @@ export type FactResult = {
   reference_count: number;
   created_at: string;
 };
+
+export type FactStoreStats = {
+  total: number;
+  current: number;
+  superseded: number;
+  unreferenced: number;
+  createdToday: number;
+  topEntities: Array<{ entity: string; count: number }>;
+};
+
+export type DuplicateFactGroup = {
+  entity: string;
+  attribute: string;
+  facts: Array<{
+    id: string;
+    value: string;
+    tags: string[];
+    confidence: number;
+    valid_from: string;
+    source: string;
+    reference_count: number;
+    created_at: string;
+  }>;
+};
+
+export type ConsolidationLogEntry = {
+  id: string;
+  type: string;
+  sessionId: string | null;
+  factsAdded: number;
+  factsUpdated: number;
+  factsInvalidated: number;
+  startedAt: string;
+  completedAt: string | null;
+  modelUsed: string | null;
+  tokensUsed: number | null;
+};
+
+type ConsolidationLogRow = {
+  id: string;
+  type: string;
+  session_id: string | null;
+  facts_added: number;
+  facts_updated: number;
+  facts_invalidated: number;
+  started_at: string;
+  completed_at: string | null;
+  model_used: string | null;
+  tokens_used: number | null;
+};
+
+function mapConsolidationRow(row: ConsolidationLogRow): ConsolidationLogEntry {
+  return {
+    id: row.id,
+    type: row.type,
+    sessionId: row.session_id,
+    factsAdded: row.facts_added,
+    factsUpdated: row.facts_updated,
+    factsInvalidated: row.facts_invalidated,
+    startedAt: row.started_at,
+    completedAt: row.completed_at,
+    modelUsed: row.model_used,
+    tokensUsed: row.tokens_used,
+  };
+}

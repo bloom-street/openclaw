@@ -1,6 +1,7 @@
 import { createRequire } from "node:module";
 import type { PluginRuntime } from "./types.js";
 import { resolveEffectiveMessagesConfig, resolveHumanDelayConfig } from "../../agents/identity.js";
+import { createMemoryConsolidateTool } from "../../agents/tools/consolidation-tool.js";
 import {
   createMemorySaveFactTool,
   createMemorySearchFactsTool,
@@ -196,6 +197,7 @@ export function createPluginRuntime(): PluginRuntime {
       createMemorySaveFactTool,
       createMemorySearchFactsTool,
       createMemoryUpdateCoreTool,
+      createMemoryConsolidateTool,
       registerMemoryCli,
     },
     channel: {

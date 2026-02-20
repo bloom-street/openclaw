@@ -4,16 +4,16 @@ import { $ as getChildLogger, A as isSelfChatMode, B as sliceUtf16Safe, C as CON
 import { B as resolveOpenClawAgentDir, C as getShellPathFromLoginShell, F as resolveApiKeyForProfile, G as DEFAULT_PROVIDER, H as resolveAuthProfileDisplayLabel, I as listProfilesForProvider, L as markAuthProfileGood, M as isProfileInCooldown, N as markAuthProfileFailure, O as isTruthyEnvValue, P as markAuthProfileUsed, R as ensureAuthProfileStore, S as resolveModelAuthMode, T as resolveShellEnvFallbackTimeoutMs, U as DEFAULT_CONTEXT_TOKENS, V as normalizeSecretInput, W as DEFAULT_MODEL, _ as getApiKeyForModel, a as modelKey, b as resolveApiKeyForProvider, c as resolveConfiguredModelRef, d as resolveThinkingDefault, f as normalizeGoogleModelId, i as isCliProvider, j as resolveAuthProfileOrder, k as parseBooleanValue$1, l as resolveDefaultModelForAgent, n as buildConfiguredAllowlistKeys, o as normalizeProviderId, r as buildModelAliasIndex, t as buildAllowedModelSet, u as resolveModelRefFromString, v as getCustomProviderApiKey, x as resolveEnvApiKey, y as requireApiKey, z as resolveAuthStorePathForDisplay } from "./model-selection-BG3SCK40.js";
 import { a as saveJsonFile, i as loadJsonFile } from "./github-copilot-token-wCk9Fg_E.js";
 import { n as resolveCliName, t as formatCliCommand } from "./command-format-CFzL448l.js";
-import { A as loadWebMediaRaw, B as resolveChunkMode, C as parseInlineDirectives$1, D as markdownToIR, E as chunkMarkdownIR, F as chunkByNewline, G as HEARTBEAT_TOKEN, H as findFenceSpanAt, I as chunkMarkdownText, K as SILENT_REPLY_TOKEN, L as chunkMarkdownTextWithMode, M as fetchRemoteMedia, N as fetchWithSsrFGuard, O as markdownToIRWithMeta, P as resolveMarkdownTableMode, R as chunkText, S as splitMediaFromOutput, T as wrapFetchWithAbortSignal, U as isSafeFenceBreak, V as resolveTextChunkLimit, W as parseFenceSpans, _ as buildTargetResolverSignature, a as applyReplyThreading, b as throwIfAborted, c as shouldSuppressMessagingToolReplies, d as sendMessageSignal, f as sendReadReceiptSignal, g as streamSignalEvents, h as signalRpcRequest, i as applyReplyTagsToPayload, j as MediaFetchError, k as loadWebMedia, l as createReplyToModeFilterForChannel, m as signalCheck, o as filterMessagingToolDuplicates, p as sendTypingSignal, q as isSilentReplyText, r as normalizeReplyPayloadsForDelivery, s as isRenderablePayload, t as deliverOutboundPayloads, u as resolveReplyToMode, v as normalizeChannelTargetInput, w as resolveFetch, x as parseReplyDirectives, y as normalizeTargetForProvider, z as chunkTextWithMode } from "./deliver-gkaybJr2.js";
-import { $ as updateSessionStoreEntry, $t as normalizeToolName, A as isCloudCodeAssistFormatError, An as listChannelPlugins, B as parseImageSizeError, Bn as resolveSlackAppToken, Bt as buildWorkspaceSkillCommandSpecs, C as BILLING_ERROR_USER_MESSAGE, Cn as kindFromMime, Ct as resolveGroupSessionKey, D as getApiErrorPayloadFingerprint, Dn as listEnabledSignalAccounts, Dt as resolveProfile, E as formatRawAssistantErrorForUi, En as mediaKindFromMime, Et as resolveBrowserConfig, F as isLikelyContextOverflowError, Fn as listTelegramAccountIds, Ft as SsrFBlockedError, G as appendAssistantMessageToSessionTranscript, Gn as normalizeDiscordToken, Gt as applySkillEnvOverrides, H as ensureSandboxWorkspaceForSession, Hn as normalizeChatType, Ht as loadWorkspaceSkillEntries, I as isRateLimitAssistantError, In as resolveTelegramAccount, J as readSessionUpdatedAt, Jt as applyOwnerOnlyToolPolicy, Kt as applySkillEnvOverridesFromSnapshot, L as isRawApiErrorPayload, Ln as resolveTelegramToken, M as isContextOverflowError, Mn as isWhatsAppGroupJid, Mt as resizeToJpeg, N as isFailoverAssistantError, Nn as normalizeWhatsAppTarget, Nt as getMediaDir, O as isAuthAssistantError, On as resolveSignalAccount, P as isFailoverErrorMessage, Pn as listEnabledTelegramAccounts, Pt as saveMediaBuffer, Q as updateSessionStore, Qt as expandToolGroups, R as isTimeoutErrorMessage, Rn as listBindings, S as isGoogleModelApi, Sn as isGifMedia, St as resolveConversationLabel, T as formatAssistantErrorText, Tt as registerBrowserRoutes, U as resolveSandboxContext, Un as listEnabledDiscordAccounts, Ut as resolveSkillsPromptForRun, V as sanitizeUserFacingText, Vn as resolveSlackBotToken, Vt as buildWorkspaceSkillSnapshot, W as resolveSandboxRuntimeStatus, Wn as resolveDiscordAccount, Wt as resolvePluginSkillDirs, X as saveSessionStore, Xt as collectExplicitAllowlist, Y as recordSessionMetaFromInbound, Yt as buildPluginToolGroups, Z as updateLastRoute, Zt as expandPolicyWithPluginGroups, _ as sanitizeSessionMessagesImages, _n as detectMime, _t as listChannelDocks, a as formatXHighModelHint, an as sanitizeGoogleTurnOrdering, at as normalizeDeliveryContext, b as downgradeOpenAIReasoningBlocks, bn as imageMimeFromFormat, bt as resolveChannelGroupToolsPolicy, c as normalizeReasoningLevel, cn as isInternalMessageChannel, ct as evaluateSessionFreshness, d as normalizeVerboseLevel, dn as normalizeMessageChannel, dt as resolveSessionResetType, en as resolveToolProfilePolicy, et as isCacheEnabled, f as resolveResponseUsageMode, fn as resolveGatewayMessageChannel, ft as resolveThreadFlag, g as normalizeTextForComparison, gn as GATEWAY_CLIENT_NAMES, gt as getChannelDock, h as isMessagingToolDuplicateNormalized, hn as GATEWAY_CLIENT_MODES, ht as deriveSessionMetaPatch, i as formatThinkingLevels, in as resolveBootstrapMaxChars, it as mergeDeliveryContext, j as isCompactionFailureError, jn as normalizeChannelId$1, k as isBillingAssistantError, kn as getChannelPlugin, kt as getImageMetadata, l as normalizeThinkLevel, ln as isMarkdownCapableMessageChannel, lt as resolveChannelResetConfig, mn as GATEWAY_CLIENT_IDS, mt as resolveMainSessionKey, n as validateGeminiTurns, nn as buildBootstrapContextFiles, nt as deliveryContextFromSession, o as listThinkingLevels, on as INTERNAL_MESSAGE_CHANNEL, ot as normalizeSessionDeliveryFields, p as supportsXHighThinking, pn as resolveMessageChannel, pt as DEFAULT_RESET_TRIGGERS, q as loadSessionStore, qt as resolveSandboxConfigForAgent, r as pickFallbackThinkingLevel, rn as ensureSessionHeader, rt as deliveryContextKey, s as normalizeElevatedLevel, sn as isDeliverableMessageChannel, st as resolveSessionKey$1, t as validateAnthropicTurns, tn as stripPluginOnlyAllowlist, tt as resolveCacheTtlMs$1, u as normalizeUsageDisplay, un as listDeliverableMessageChannels, ut as resolveSessionResetPolicy, v as sanitizeImageBlocks, vn as extensionForMime, vt as resolveChannelGroupPolicy, w as classifyFailoverReason, wn as MAX_IMAGE_BYTES, wt as createBrowserRouteContext, x as isAntigravityClaude, xn as isAudioFileName, xt as resolveIMessageAccount, y as sanitizeToolResultImages, yn as getFileExtension, yt as resolveChannelGroupRequireMention, z as parseImageDimensionError, zn as resolveSlackAccount } from "./pi-embedded-helpers-DBSxa-7W.js";
+import { A as loadWebMediaRaw, B as resolveChunkMode, C as parseInlineDirectives$1, D as markdownToIR, E as chunkMarkdownIR, F as chunkByNewline, G as HEARTBEAT_TOKEN, H as findFenceSpanAt, I as chunkMarkdownText, K as SILENT_REPLY_TOKEN, L as chunkMarkdownTextWithMode, M as fetchRemoteMedia, N as fetchWithSsrFGuard, O as markdownToIRWithMeta, P as resolveMarkdownTableMode, R as chunkText, S as splitMediaFromOutput, T as wrapFetchWithAbortSignal, U as isSafeFenceBreak, V as resolveTextChunkLimit, W as parseFenceSpans, _ as buildTargetResolverSignature, a as applyReplyThreading, b as throwIfAborted, c as shouldSuppressMessagingToolReplies, d as sendMessageSignal, f as sendReadReceiptSignal, g as streamSignalEvents, h as signalRpcRequest, i as applyReplyTagsToPayload, j as MediaFetchError, k as loadWebMedia, l as createReplyToModeFilterForChannel, m as signalCheck, o as filterMessagingToolDuplicates, p as sendTypingSignal, q as isSilentReplyText, r as normalizeReplyPayloadsForDelivery, s as isRenderablePayload, t as deliverOutboundPayloads, u as resolveReplyToMode, v as normalizeChannelTargetInput, w as resolveFetch, x as parseReplyDirectives, y as normalizeTargetForProvider, z as chunkTextWithMode } from "./deliver-DG07jMo_.js";
+import { $ as updateSessionStoreEntry, $t as normalizeToolName, A as isCloudCodeAssistFormatError, An as listChannelPlugins, B as parseImageSizeError, Bn as resolveSlackAppToken, Bt as buildWorkspaceSkillCommandSpecs, C as BILLING_ERROR_USER_MESSAGE, Cn as kindFromMime, Ct as resolveGroupSessionKey, D as getApiErrorPayloadFingerprint, Dn as listEnabledSignalAccounts, Dt as resolveProfile, E as formatRawAssistantErrorForUi, En as mediaKindFromMime, Et as resolveBrowserConfig, F as isLikelyContextOverflowError, Fn as listTelegramAccountIds, Ft as SsrFBlockedError, G as appendAssistantMessageToSessionTranscript, Gn as normalizeDiscordToken, Gt as applySkillEnvOverrides, H as ensureSandboxWorkspaceForSession, Hn as normalizeChatType, Ht as loadWorkspaceSkillEntries, I as isRateLimitAssistantError, In as resolveTelegramAccount, J as readSessionUpdatedAt, Jt as applyOwnerOnlyToolPolicy, Kt as applySkillEnvOverridesFromSnapshot, L as isRawApiErrorPayload, Ln as resolveTelegramToken, M as isContextOverflowError, Mn as isWhatsAppGroupJid, Mt as resizeToJpeg, N as isFailoverAssistantError, Nn as normalizeWhatsAppTarget, Nt as getMediaDir, O as isAuthAssistantError, On as resolveSignalAccount, P as isFailoverErrorMessage, Pn as listEnabledTelegramAccounts, Pt as saveMediaBuffer, Q as updateSessionStore, Qt as expandToolGroups, R as isTimeoutErrorMessage, Rn as listBindings, S as isGoogleModelApi, Sn as isGifMedia, St as resolveConversationLabel, T as formatAssistantErrorText, Tt as registerBrowserRoutes, U as resolveSandboxContext, Un as listEnabledDiscordAccounts, Ut as resolveSkillsPromptForRun, V as sanitizeUserFacingText, Vn as resolveSlackBotToken, Vt as buildWorkspaceSkillSnapshot, W as resolveSandboxRuntimeStatus, Wn as resolveDiscordAccount, Wt as resolvePluginSkillDirs, X as saveSessionStore, Xt as collectExplicitAllowlist, Y as recordSessionMetaFromInbound, Yt as buildPluginToolGroups, Z as updateLastRoute, Zt as expandPolicyWithPluginGroups, _ as sanitizeSessionMessagesImages, _n as detectMime, _t as listChannelDocks, a as formatXHighModelHint, an as sanitizeGoogleTurnOrdering, at as normalizeDeliveryContext, b as downgradeOpenAIReasoningBlocks, bn as imageMimeFromFormat, bt as resolveChannelGroupToolsPolicy, c as normalizeReasoningLevel, cn as isInternalMessageChannel, ct as evaluateSessionFreshness, d as normalizeVerboseLevel, dn as normalizeMessageChannel, dt as resolveSessionResetType, en as resolveToolProfilePolicy, et as isCacheEnabled, f as resolveResponseUsageMode, fn as resolveGatewayMessageChannel, ft as resolveThreadFlag, g as normalizeTextForComparison, gn as GATEWAY_CLIENT_NAMES, gt as getChannelDock, h as isMessagingToolDuplicateNormalized, hn as GATEWAY_CLIENT_MODES, ht as deriveSessionMetaPatch, i as formatThinkingLevels, in as resolveBootstrapMaxChars, it as mergeDeliveryContext, j as isCompactionFailureError, jn as normalizeChannelId$1, k as isBillingAssistantError, kn as getChannelPlugin, kt as getImageMetadata, l as normalizeThinkLevel, ln as isMarkdownCapableMessageChannel, lt as resolveChannelResetConfig, mn as GATEWAY_CLIENT_IDS, mt as resolveMainSessionKey, n as validateGeminiTurns, nn as buildBootstrapContextFiles, nt as deliveryContextFromSession, o as listThinkingLevels, on as INTERNAL_MESSAGE_CHANNEL, ot as normalizeSessionDeliveryFields, p as supportsXHighThinking, pn as resolveMessageChannel, pt as DEFAULT_RESET_TRIGGERS, q as loadSessionStore, qt as resolveSandboxConfigForAgent, r as pickFallbackThinkingLevel, rn as ensureSessionHeader, rt as deliveryContextKey, s as normalizeElevatedLevel, sn as isDeliverableMessageChannel, st as resolveSessionKey$1, t as validateAnthropicTurns, tn as stripPluginOnlyAllowlist, tt as resolveCacheTtlMs$1, u as normalizeUsageDisplay, un as listDeliverableMessageChannels, ut as resolveSessionResetPolicy, v as sanitizeImageBlocks, vn as extensionForMime, vt as resolveChannelGroupPolicy, w as classifyFailoverReason, wn as MAX_IMAGE_BYTES, wt as createBrowserRouteContext, x as isAntigravityClaude, xn as isAudioFileName, xt as resolveIMessageAccount, y as sanitizeToolResultImages, yn as getFileExtension, yt as resolveChannelGroupRequireMention, z as parseImageDimensionError, zn as resolveSlackAccount } from "./pi-embedded-helpers-Bt6kN3qu.js";
 import { A as getWebAuthAgeMs, C as getConfigValueAtPath, D as resolveAgentMaxConcurrent, E as unsetConfigValueAtPath, M as logoutWeb, O as VERSION, P as readWebSelfId, R as webAuthExists, S as unsetConfigOverride, T as setConfigValueAtPath, _ as resolveEnableState, a as validateConfigObjectWithPlugins, b as resetConfigOverrides, c as resolveTelegramCustomCommands, d as validateJsonSchemaValue, f as loadPluginManifestRegistry, g as normalizePluginsConfig, i as writeConfigFile, j as logWebSelfId, k as resolveWhatsAppAccount, l as isSafeExecutableValue, n as readConfigFileSnapshot, o as TELEGRAM_COMMAND_NAME_PATTERN, p as discoverOpenClawPlugins, r as resolveConfigSnapshotHash, s as normalizeTelegramCommandName, t as loadConfig, u as parseDurationMs, v as resolveMemorySlotDecision, w as parseConfigPath, x as setConfigOverride, y as getConfigOverrides } from "./config-2b1WGSeH.js";
 import { n as discoverModels, t as discoverAuthStorage } from "./pi-model-discovery-EhM2JAQo.js";
-import { _ as rawDataToString, b as DEFAULT_AI_SNAPSHOT_MAX_CHARS, h as ensureChromeExtensionRelayServer } from "./chrome-B9aqW1qJ.js";
+import { _ as rawDataToString, b as DEFAULT_AI_SNAPSHOT_MAX_CHARS, h as ensureChromeExtensionRelayServer } from "./chrome-BxmeoNyo.js";
 import { n as formatErrorMessage, r as formatUncaughtError, t as extractErrorCode } from "./errors-jAcIZwmG.js";
 import { a as resolveStorePath, i as resolveSessionTranscriptsDirForAgent, n as resolveSessionFilePath, r as resolveSessionTranscriptPath } from "./paths-NoJLLyMJ.js";
 import { t as emitSessionTranscriptUpdate } from "./transcript-events-BrkSiEN9.js";
-import { _ as stripThinkingTagsFromText, a as decodeDataUrl, c as extractAssistantText$1, d as extractThinkingFromTaggedText, f as formatReasoningMessage, g as stripMinimaxToolCallXml, h as stripDowngradedToolCallText, i as coerceImageModelConfig, l as extractAssistantThinking, m as promoteThinkingTagsToBlocks, o as resolveProviderVisionModelFromConfig, p as inferToolMetaFromArgs, r as coerceImageAssistantText, s as minimaxUnderstandImage, t as describeImageWithModel, u as extractThinkingFromTaggedStream, v as resolveToolDisplay, y as ensureOpenClawModelsJson } from "./image-DDaihcie.js";
-import { i as resolveMemorySearchConfig, n as resolveRetryConfig, r as retryAsync } from "./manager-BWX5em5r.js";
+import { _ as stripThinkingTagsFromText, a as decodeDataUrl, c as extractAssistantText$1, d as extractThinkingFromTaggedText, f as formatReasoningMessage, g as stripMinimaxToolCallXml, h as stripDowngradedToolCallText, i as coerceImageModelConfig, l as extractAssistantThinking, m as promoteThinkingTagsToBlocks, o as resolveProviderVisionModelFromConfig, p as inferToolMetaFromArgs, r as coerceImageAssistantText, s as minimaxUnderstandImage, t as describeImageWithModel, u as extractThinkingFromTaggedStream, v as resolveToolDisplay, y as ensureOpenClawModelsJson } from "./image-oBptYP_7.js";
+import { a as resolveMemorySearchConfig, i as retryAsync, r as resolveRetryConfig, t as MemoryIndexManager } from "./manager-N_N5SoyT.js";
 import { c as listMemoryFiles, l as normalizeExtraMemoryPaths } from "./sqlite-CpqIbY4-.js";
 import { t as redactSensitiveText } from "./redact-BrXLgslJ.js";
 import { a as formatError$1, i as createWaSocket, n as startWebLoginWithQr, o as getStatusCode$1, r as waitForWebLogin, s as waitForWaConnection } from "./login-qr-D2eSaq7w.js";
@@ -36,7 +36,7 @@ import { EdgeTTS } from "node-edge-tts";
 import AjvPkg from "ajv";
 import { createServer } from "node:http";
 import { ProxyAgent, fetch as fetch$1 } from "undici";
-import { WebSocket as WebSocket$1 } from "ws";
+import { WebSocket } from "ws";
 import { Buffer as Buffer$1 } from "node:buffer";
 import * as net$1 from "node:net";
 import net from "node:net";
@@ -3251,6 +3251,575 @@ function createPluginRegistry(registryParams) {
 }
 
 //#endregion
+//#region src/agents/tools/common.ts
+function createActionGate(actions) {
+	return (key, defaultValue = true) => {
+		const value = actions?.[key];
+		if (value === void 0) return defaultValue;
+		return value !== false;
+	};
+}
+function readStringParam(params, key, options = {}) {
+	const { required = false, trim = true, label = key, allowEmpty = false } = options;
+	const raw = params[key];
+	if (typeof raw !== "string") {
+		if (required) throw new Error(`${label} required`);
+		return;
+	}
+	const value = trim ? raw.trim() : raw;
+	if (!value && !allowEmpty) {
+		if (required) throw new Error(`${label} required`);
+		return;
+	}
+	return value;
+}
+function readStringOrNumberParam(params, key, options = {}) {
+	const { required = false, label = key } = options;
+	const raw = params[key];
+	if (typeof raw === "number" && Number.isFinite(raw)) return String(raw);
+	if (typeof raw === "string") {
+		const value = raw.trim();
+		if (value) return value;
+	}
+	if (required) throw new Error(`${label} required`);
+}
+function readNumberParam(params, key, options = {}) {
+	const { required = false, label = key, integer = false } = options;
+	const raw = params[key];
+	let value;
+	if (typeof raw === "number" && Number.isFinite(raw)) value = raw;
+	else if (typeof raw === "string") {
+		const trimmed = raw.trim();
+		if (trimmed) {
+			const parsed = Number.parseFloat(trimmed);
+			if (Number.isFinite(parsed)) value = parsed;
+		}
+	}
+	if (value === void 0) {
+		if (required) throw new Error(`${label} required`);
+		return;
+	}
+	return integer ? Math.trunc(value) : value;
+}
+function readStringArrayParam(params, key, options = {}) {
+	const { required = false, label = key } = options;
+	const raw = params[key];
+	if (Array.isArray(raw)) {
+		const values = raw.filter((entry) => typeof entry === "string").map((entry) => entry.trim()).filter(Boolean);
+		if (values.length === 0) {
+			if (required) throw new Error(`${label} required`);
+			return;
+		}
+		return values;
+	}
+	if (typeof raw === "string") {
+		const value = raw.trim();
+		if (!value) {
+			if (required) throw new Error(`${label} required`);
+			return;
+		}
+		return [value];
+	}
+	if (required) throw new Error(`${label} required`);
+}
+function readReactionParams(params, options) {
+	const emojiKey = options.emojiKey ?? "emoji";
+	const removeKey = options.removeKey ?? "remove";
+	const remove = typeof params[removeKey] === "boolean" ? params[removeKey] : false;
+	const emoji = readStringParam(params, emojiKey, {
+		required: true,
+		allowEmpty: true
+	});
+	if (remove && !emoji) throw new Error(options.removeErrorMessage);
+	return {
+		emoji,
+		remove,
+		isEmpty: !emoji
+	};
+}
+function jsonResult(payload) {
+	return {
+		content: [{
+			type: "text",
+			text: JSON.stringify(payload, null, 2)
+		}],
+		details: payload
+	};
+}
+async function imageResult(params) {
+	return await sanitizeToolResultImages({
+		content: [{
+			type: "text",
+			text: params.extraText ?? `MEDIA:${params.path}`
+		}, {
+			type: "image",
+			data: params.base64,
+			mimeType: params.mimeType
+		}],
+		details: {
+			path: params.path,
+			...params.details
+		}
+	}, params.label);
+}
+async function imageResultFromFile(params) {
+	const buf = await fs$1.readFile(params.path);
+	const mimeType = await detectMime({ buffer: buf.slice(0, 256) }) ?? "image/png";
+	return await imageResult({
+		label: params.label,
+		path: params.path,
+		base64: buf.toString("base64"),
+		mimeType,
+		extraText: params.extraText,
+		details: params.details
+	});
+}
+
+//#endregion
+//#region src/agents/tools/facts-tool.ts
+const SaveFactSchema = Type.Object({
+	entity: Type.String(),
+	attribute: Type.String(),
+	value: Type.String(),
+	tags: Type.Optional(Type.Array(Type.String())),
+	confidence: Type.Optional(Type.Number())
+});
+const SearchFactsSchema = Type.Object({
+	query: Type.String(),
+	entity: Type.Optional(Type.String()),
+	tags: Type.Optional(Type.Array(Type.String())),
+	include_historical: Type.Optional(Type.Boolean()),
+	limit: Type.Optional(Type.Number())
+});
+const UpdateCoreSchema = Type.Object({
+	file: Type.Union([Type.Literal("USER.md"), Type.Literal("MEMORY.md")]),
+	action: Type.Union([
+		Type.Literal("append_section"),
+		Type.Literal("replace_section"),
+		Type.Literal("append_line"),
+		Type.Literal("rewrite")
+	]),
+	section: Type.Optional(Type.String()),
+	content: Type.String()
+});
+const CORE_FILE_CHAR_LIMIT = 5e3;
+async function getManager$1(options) {
+	const cfg = options.config;
+	if (!cfg) return null;
+	const agentId = resolveSessionAgentId({
+		sessionKey: options.agentSessionKey,
+		config: cfg
+	});
+	if (!resolveMemorySearchConfig(cfg, agentId)) return null;
+	return MemoryIndexManager.get({
+		cfg,
+		agentId
+	});
+}
+function createMemorySaveFactTool(options) {
+	const cfg = options.config;
+	if (!cfg) return null;
+	if (!resolveMemorySearchConfig(cfg, resolveSessionAgentId({
+		sessionKey: options.agentSessionKey,
+		config: cfg
+	}))) return null;
+	return {
+		label: "Save Fact",
+		name: "memory_save_fact",
+		description: "Save a structured fact about the user, a person, project, preference, or decision. Facts are entity/attribute/value triples with temporal tracking. If a fact with the same entity+attribute already exists with a different value, the old fact is superseded (not deleted) and the new one becomes current.",
+		parameters: SaveFactSchema,
+		execute: async (_toolCallId, params) => {
+			const entity = readStringParam(params, "entity", { required: true });
+			const attribute = readStringParam(params, "attribute", { required: true });
+			const value = readStringParam(params, "value", { required: true });
+			const tags = readStringArrayParam(params, "tags");
+			const confidence = readNumberParam(params, "confidence");
+			const manager = await getManager$1(options);
+			if (!manager) return jsonResult({ error: "Memory system not available." });
+			try {
+				return jsonResult(manager.saveFact({
+					entity,
+					attribute,
+					value,
+					tags: tags ?? void 0,
+					confidence: confidence ?? void 0
+				}));
+			} catch (err) {
+				return jsonResult({ error: err instanceof Error ? err.message : String(err) });
+			}
+		}
+	};
+}
+function createMemorySearchFactsTool(options) {
+	const cfg = options.config;
+	if (!cfg) return null;
+	if (!resolveMemorySearchConfig(cfg, resolveSessionAgentId({
+		sessionKey: options.agentSessionKey,
+		config: cfg
+	}))) return null;
+	return {
+		label: "Search Facts",
+		name: "memory_search_facts",
+		description: "Search the structured fact store. Use this BEFORE memory_search for quick recalls (names, preferences, dates, people, projects). Returns entity/attribute/value facts ranked by relevance. Only escalate to memory_search if facts search doesn't find what you need.",
+		parameters: SearchFactsSchema,
+		execute: async (_toolCallId, params) => {
+			const query = readStringParam(params, "query", { required: true });
+			const entity = readStringParam(params, "entity");
+			const tags = readStringArrayParam(params, "tags");
+			const includeHistorical = params.include_historical === true;
+			const limit = readNumberParam(params, "limit", { integer: true });
+			const manager = await getManager$1(options);
+			if (!manager) return jsonResult({
+				results: [],
+				count: 0,
+				error: "Memory system not available."
+			});
+			try {
+				return jsonResult(manager.searchFacts({
+					query,
+					entity: entity ?? void 0,
+					tags: tags ?? void 0,
+					includeHistorical,
+					limit: limit ?? void 0
+				}));
+			} catch (err) {
+				return jsonResult({
+					results: [],
+					count: 0,
+					error: err instanceof Error ? err.message : String(err)
+				});
+			}
+		}
+	};
+}
+function createMemoryUpdateCoreTool(options) {
+	const cfg = options.config;
+	if (!cfg) return null;
+	if (!resolveMemorySearchConfig(cfg, resolveSessionAgentId({
+		sessionKey: options.agentSessionKey,
+		config: cfg
+	}))) return null;
+	return {
+		label: "Update Core Memory",
+		name: "memory_update_core",
+		description: "Edit USER.md or MEMORY.md using section-based operations. Actions: append_section (add new ## section), replace_section (replace content under existing ## header), append_line (add line to section or end), rewrite (full file rewrite for consolidation). Returns character counts so you know remaining capacity.",
+		parameters: UpdateCoreSchema,
+		execute: async (_toolCallId, params) => {
+			const file = readStringParam(params, "file", { required: true });
+			const action = readStringParam(params, "action", { required: true });
+			const section = readStringParam(params, "section");
+			const content = readStringParam(params, "content", {
+				required: true,
+				trim: false
+			});
+			if (!["USER.md", "MEMORY.md"].includes(file)) return jsonResult({ error: "file must be USER.md or MEMORY.md" });
+			if ((action === "append_section" || action === "replace_section" || action === "append_line") && !section && action !== "append_line") return jsonResult({ error: `section is required for ${action}` });
+			const manager = await getManager$1(options);
+			if (!manager) return jsonResult({ error: "Memory system not available." });
+			try {
+				const workspaceDir = manager.getWorkspaceDir();
+				const filePath = path.join(workspaceDir, file);
+				let existing = "";
+				try {
+					existing = fs.readFileSync(filePath, "utf-8");
+				} catch {}
+				let updated;
+				switch (action) {
+					case "append_section": {
+						if (!section) return jsonResult({ error: "section is required for append_section" });
+						const sectionHeader = section.startsWith("#") ? section : `## ${section}`;
+						if (existing.trim().length === 0) updated = `${sectionHeader}\n${content}\n`;
+						else updated = existing.trimEnd() + `\n\n${sectionHeader}\n${content}\n`;
+						break;
+					}
+					case "replace_section": {
+						if (!section) return jsonResult({ error: "section is required for replace_section" });
+						const sectionName = section.replace(/^#+\s*/, "");
+						const bounds = findSectionBounds(existing, sectionName);
+						if (!bounds) return jsonResult({ error: `Section "${sectionName}" not found in ${file}. Use append_section to create it.` });
+						updated = existing.slice(0, bounds.headerStart) + bounds.headerLine + "\n" + content + "\n" + existing.slice(bounds.contentEnd);
+						break;
+					}
+					case "append_line":
+						if (section) {
+							const sectionName = section.replace(/^#+\s*/, "");
+							const bounds = findSectionBounds(existing, sectionName);
+							if (!bounds) return jsonResult({ error: `Section "${sectionName}" not found in ${file}.` });
+							updated = existing.slice(0, bounds.contentEnd).trimEnd() + "\n" + content + "\n" + existing.slice(bounds.contentEnd);
+						} else updated = existing.trimEnd() + "\n" + content + "\n";
+						break;
+					case "rewrite":
+						updated = content;
+						break;
+					default: return jsonResult({ error: `Unknown action: ${action}` });
+				}
+				if (updated.length > CORE_FILE_CHAR_LIMIT) return jsonResult({
+					error: `Would exceed ${CORE_FILE_CHAR_LIMIT} char limit (result: ${updated.length} chars). Reduce content or use rewrite with a condensed version.`,
+					chars_used: existing.length,
+					chars_limit: CORE_FILE_CHAR_LIMIT
+				});
+				fs.writeFileSync(filePath, updated, "utf-8");
+				return jsonResult({
+					message: `${file} updated (${action}).`,
+					chars_used: updated.length,
+					chars_limit: CORE_FILE_CHAR_LIMIT
+				});
+			} catch (err) {
+				return jsonResult({ error: err instanceof Error ? err.message : String(err) });
+			}
+		}
+	};
+}
+/**
+* Find a markdown section by name. Returns the byte offsets for the header line
+* and the content block (everything between this header and the next header or EOF).
+* Uses line-based scanning instead of regex to avoid multiline flag issues.
+*/
+function findSectionBounds(text, sectionName) {
+	const lines = text.split("\n");
+	const target = sectionName.toLowerCase();
+	let offset = 0;
+	let headerStart = -1;
+	let headerLine = "";
+	let contentStart = -1;
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		const lineStart = offset;
+		offset += line.length + 1;
+		const headerMatch = /^(#{1,3})\s+(.+?)\s*$/.exec(line);
+		if (!headerMatch) continue;
+		const name = headerMatch[2].toLowerCase();
+		if (headerStart === -1) {
+			if (name === target) {
+				headerStart = lineStart;
+				headerLine = line;
+				contentStart = offset;
+			}
+		} else return {
+			headerStart,
+			headerLine,
+			contentStart,
+			contentEnd: lineStart
+		};
+	}
+	if (headerStart !== -1) return {
+		headerStart,
+		headerLine,
+		contentStart,
+		contentEnd: text.length
+	};
+	return null;
+}
+
+//#endregion
+//#region src/agents/tools/consolidation-tool.ts
+const ConsolidateSchema = Type.Object({ scope: Type.Union([
+	Type.Literal("post_session"),
+	Type.Literal("daily"),
+	Type.Literal("weekly")
+]) });
+async function getManager(options) {
+	const cfg = options.config;
+	if (!cfg) return null;
+	const agentId = resolveSessionAgentId({
+		sessionKey: options.agentSessionKey,
+		config: cfg
+	});
+	if (!resolveMemorySearchConfig(cfg, agentId)) return null;
+	return MemoryIndexManager.get({
+		cfg,
+		agentId
+	});
+}
+function createMemoryConsolidateTool(options) {
+	const cfg = options.config;
+	if (!cfg) return null;
+	if (!resolveMemorySearchConfig(cfg, resolveSessionAgentId({
+		sessionKey: options.agentSessionKey,
+		config: cfg
+	}))) return null;
+	return {
+		label: "Consolidate Memory",
+		name: "memory_consolidate",
+		description: "Run memory consolidation for a given scope. post_session: get stats on recent facts and log the consolidation run. daily: find duplicate facts, apply deduplication, return a report for review. weekly: apply expiry policies to stale facts, return stats and patterns for review. After calling this tool, use memory_save_fact/memory_update_core to act on the results.",
+		parameters: ConsolidateSchema,
+		execute: async (_toolCallId, params) => {
+			const scope = readStringParam(params, "scope", { required: true });
+			if (![
+				"post_session",
+				"daily",
+				"weekly"
+			].includes(scope)) return jsonResult({ error: "scope must be post_session, daily, or weekly" });
+			const manager = await getManager(options);
+			if (!manager) return jsonResult({ error: "Memory system not available." });
+			try {
+				const startedAt = (/* @__PURE__ */ new Date()).toISOString();
+				switch (scope) {
+					case "post_session": return await runPostSessionConsolidation(manager, startedAt);
+					case "daily": return await runDailyConsolidation(manager, startedAt);
+					case "weekly": return await runWeeklyConsolidation(manager, startedAt);
+					default: return jsonResult({ error: `Unknown scope: ${scope}` });
+				}
+			} catch (err) {
+				return jsonResult({ error: err instanceof Error ? err.message : String(err) });
+			}
+		}
+	};
+}
+async function runPostSessionConsolidation(manager, startedAt) {
+	const lastRun = manager.getLastConsolidation("post_session");
+	if (lastRun?.completedAt) {
+		if (Date.now() - new Date(lastRun.completedAt).getTime() < 300 * 1e3) return jsonResult({
+			message: "Post-session consolidation already ran recently. Skipping.",
+			last_run: lastRun.completedAt
+		});
+	}
+	const stats = manager.getFactStats();
+	const recentFacts = manager.getRecentFacts({ limit: 30 });
+	const completedAt = (/* @__PURE__ */ new Date()).toISOString();
+	return jsonResult({
+		message: "Post-session consolidation complete. Review the stats and recent facts below. Use memory_save_fact to save any new facts you extracted from the conversation. Use memory_update_core to update USER.md or MEMORY.md with key insights.",
+		consolidation_id: manager.logConsolidation({
+			type: "post_session",
+			startedAt,
+			completedAt
+		}),
+		stats: {
+			total_facts: stats.total,
+			current_facts: stats.current,
+			superseded: stats.superseded,
+			unreferenced: stats.unreferenced,
+			created_today: stats.createdToday,
+			top_entities: stats.topEntities
+		},
+		recent_facts: recentFacts.map((f) => ({
+			entity: f.entity,
+			attribute: f.attribute,
+			value: f.value,
+			tags: f.tags,
+			source: f.source,
+			created_at: f.created_at
+		}))
+	});
+}
+async function runDailyConsolidation(manager, startedAt) {
+	const lastRun = manager.getLastConsolidation("daily");
+	if (lastRun?.completedAt) {
+		const lastDate = new Date(lastRun.completedAt);
+		const today = /* @__PURE__ */ new Date();
+		if (lastDate.getFullYear() === today.getFullYear() && lastDate.getMonth() === today.getMonth() && lastDate.getDate() === today.getDate()) return jsonResult({
+			message: "Daily consolidation already ran today. Skipping.",
+			last_run: lastRun.completedAt
+		});
+	}
+	const duplicates = manager.findDuplicateFacts();
+	const stats = manager.getFactStats();
+	const todayStart = /* @__PURE__ */ new Date();
+	todayStart.setHours(0, 0, 0, 0);
+	const todayFacts = manager.getRecentFacts({
+		since: todayStart.toISOString(),
+		limit: 100
+	});
+	const completedAt = (/* @__PURE__ */ new Date()).toISOString();
+	const logId = manager.logConsolidation({
+		type: "daily",
+		startedAt,
+		completedAt
+	});
+	return jsonResult({
+		message: "Daily consolidation report ready. " + (duplicates.length > 0 ? `Found ${duplicates.length} duplicate group(s) that may need dedup. For each group, keep the most specific/complete value and supersede the rest using memory_save_fact. ` : "No duplicate facts found. ") + "Review today's facts and update USER.md/MEMORY.md with memory_update_core if needed.",
+		consolidation_id: logId,
+		stats: {
+			total_facts: stats.total,
+			current_facts: stats.current,
+			superseded: stats.superseded,
+			unreferenced: stats.unreferenced,
+			created_today: stats.createdToday,
+			top_entities: stats.topEntities
+		},
+		duplicates: duplicates.map((group) => ({
+			entity: group.entity,
+			attribute: group.attribute,
+			values: group.facts.map((f) => ({
+				id: f.id,
+				value: f.value,
+				source: f.source,
+				reference_count: f.reference_count,
+				created_at: f.created_at
+			}))
+		})),
+		today_facts_count: todayFacts.length,
+		today_facts_sample: todayFacts.slice(0, 20).map((f) => ({
+			entity: f.entity,
+			attribute: f.attribute,
+			value: f.value,
+			tags: f.tags,
+			source: f.source
+		}))
+	});
+}
+async function runWeeklyConsolidation(manager, startedAt) {
+	const lastRun = manager.getLastConsolidation("weekly");
+	if (lastRun?.completedAt) {
+		if (Date.now() - new Date(lastRun.completedAt).getTime() < 8640 * 60 * 1e3) return jsonResult({
+			message: "Weekly consolidation already ran this week. Skipping.",
+			last_run: lastRun.completedAt
+		});
+	}
+	const expiryResult = manager.applyFactExpiry();
+	const duplicates = manager.findDuplicateFacts();
+	const stats = manager.getFactStats();
+	const recentFacts = manager.getRecentFacts({ limit: 200 });
+	const promotionCandidates = recentFacts.filter((f) => f.reference_count >= 3 && !f.tags.includes("type:surface"));
+	const entityFactCounts = /* @__PURE__ */ new Map();
+	for (const fact of recentFacts) entityFactCounts.set(fact.entity, (entityFactCounts.get(fact.entity) ?? 0) + 1);
+	const frequentEntities = Array.from(entityFactCounts.entries()).filter(([, count]) => count >= 3).sort((a, b) => b[1] - a[1]).map(([entity, count]) => ({
+		entity,
+		fact_count: count
+	}));
+	const completedAt = (/* @__PURE__ */ new Date()).toISOString();
+	const logId = manager.logConsolidation({
+		type: "weekly",
+		factsInvalidated: expiryResult.invalidated,
+		startedAt,
+		completedAt
+	});
+	return jsonResult({
+		message: "Weekly consolidation report ready. " + (expiryResult.invalidated > 0 ? `Expired ${expiryResult.invalidated} stale fact(s). ` : "No facts expired. ") + (duplicates.length > 0 ? `Found ${duplicates.length} duplicate group(s) to review. ` : "") + (promotionCandidates.length > 0 ? `${promotionCandidates.length} fact(s) are referenced 3+ times — consider promoting to USER.md/MEMORY.md. ` : "") + "Use memory_update_core with action 'rewrite' to refresh core memory with current, verified facts.",
+		consolidation_id: logId,
+		expiry: {
+			invalidated: expiryResult.invalidated,
+			details: expiryResult.details.slice(0, 20)
+		},
+		stats: {
+			total_facts: stats.total,
+			current_facts: stats.current,
+			superseded: stats.superseded,
+			unreferenced: stats.unreferenced,
+			top_entities: stats.topEntities
+		},
+		duplicates: duplicates.slice(0, 10).map((group) => ({
+			entity: group.entity,
+			attribute: group.attribute,
+			values: group.facts.map((f) => ({
+				id: f.id,
+				value: f.value,
+				reference_count: f.reference_count,
+				created_at: f.created_at
+			}))
+		})),
+		promotion_candidates: promotionCandidates.slice(0, 15).map((f) => ({
+			entity: f.entity,
+			attribute: f.attribute,
+			value: f.value,
+			reference_count: f.reference_count,
+			tags: f.tags
+		})),
+		frequent_entities: frequentEntities.slice(0, 10)
+	});
+}
+
+//#endregion
 //#region src/utils/shell-argv.ts
 function splitShellArgs(raw) {
 	const tokens = [];
@@ -3498,7 +4067,7 @@ async function getMemorySearchManager(params) {
 				const wrapper = new FallbackMemoryManager({
 					primary,
 					fallbackFactory: async () => {
-						const { MemoryIndexManager } = await import("./manager-BWX5em5r.js").then((n) => n.t);
+						const { MemoryIndexManager } = await import("./manager-N_N5SoyT.js").then((n) => n.n);
 						return await MemoryIndexManager.get(params);
 					}
 				}, () => QMD_MANAGER_CACHE.delete(cacheKey));
@@ -3511,7 +4080,7 @@ async function getMemorySearchManager(params) {
 		}
 	}
 	try {
-		const { MemoryIndexManager } = await import("./manager-BWX5em5r.js").then((n) => n.t);
+		const { MemoryIndexManager } = await import("./manager-N_N5SoyT.js").then((n) => n.n);
 		return { manager: await MemoryIndexManager.get(params) };
 	} catch (err) {
 		return {
@@ -3637,131 +4206,6 @@ function sortValue(value) {
 		return Object.fromEntries(sortedEntries);
 	}
 	return value;
-}
-
-//#endregion
-//#region src/agents/tools/common.ts
-function createActionGate(actions) {
-	return (key, defaultValue = true) => {
-		const value = actions?.[key];
-		if (value === void 0) return defaultValue;
-		return value !== false;
-	};
-}
-function readStringParam(params, key, options = {}) {
-	const { required = false, trim = true, label = key, allowEmpty = false } = options;
-	const raw = params[key];
-	if (typeof raw !== "string") {
-		if (required) throw new Error(`${label} required`);
-		return;
-	}
-	const value = trim ? raw.trim() : raw;
-	if (!value && !allowEmpty) {
-		if (required) throw new Error(`${label} required`);
-		return;
-	}
-	return value;
-}
-function readStringOrNumberParam(params, key, options = {}) {
-	const { required = false, label = key } = options;
-	const raw = params[key];
-	if (typeof raw === "number" && Number.isFinite(raw)) return String(raw);
-	if (typeof raw === "string") {
-		const value = raw.trim();
-		if (value) return value;
-	}
-	if (required) throw new Error(`${label} required`);
-}
-function readNumberParam(params, key, options = {}) {
-	const { required = false, label = key, integer = false } = options;
-	const raw = params[key];
-	let value;
-	if (typeof raw === "number" && Number.isFinite(raw)) value = raw;
-	else if (typeof raw === "string") {
-		const trimmed = raw.trim();
-		if (trimmed) {
-			const parsed = Number.parseFloat(trimmed);
-			if (Number.isFinite(parsed)) value = parsed;
-		}
-	}
-	if (value === void 0) {
-		if (required) throw new Error(`${label} required`);
-		return;
-	}
-	return integer ? Math.trunc(value) : value;
-}
-function readStringArrayParam(params, key, options = {}) {
-	const { required = false, label = key } = options;
-	const raw = params[key];
-	if (Array.isArray(raw)) {
-		const values = raw.filter((entry) => typeof entry === "string").map((entry) => entry.trim()).filter(Boolean);
-		if (values.length === 0) {
-			if (required) throw new Error(`${label} required`);
-			return;
-		}
-		return values;
-	}
-	if (typeof raw === "string") {
-		const value = raw.trim();
-		if (!value) {
-			if (required) throw new Error(`${label} required`);
-			return;
-		}
-		return [value];
-	}
-	if (required) throw new Error(`${label} required`);
-}
-function readReactionParams(params, options) {
-	const emojiKey = options.emojiKey ?? "emoji";
-	const removeKey = options.removeKey ?? "remove";
-	const remove = typeof params[removeKey] === "boolean" ? params[removeKey] : false;
-	const emoji = readStringParam(params, emojiKey, {
-		required: true,
-		allowEmpty: true
-	});
-	if (remove && !emoji) throw new Error(options.removeErrorMessage);
-	return {
-		emoji,
-		remove,
-		isEmpty: !emoji
-	};
-}
-function jsonResult(payload) {
-	return {
-		content: [{
-			type: "text",
-			text: JSON.stringify(payload, null, 2)
-		}],
-		details: payload
-	};
-}
-async function imageResult(params) {
-	return await sanitizeToolResultImages({
-		content: [{
-			type: "text",
-			text: params.extraText ?? `MEDIA:${params.path}`
-		}, {
-			type: "image",
-			data: params.base64,
-			mimeType: params.mimeType
-		}],
-		details: {
-			path: params.path,
-			...params.details
-		}
-	}, params.label);
-}
-async function imageResultFromFile(params) {
-	const buf = await fs$1.readFile(params.path);
-	const mimeType = await detectMime({ buffer: buf.slice(0, 256) }) ?? "image/png";
-	return await imageResult({
-		label: params.label,
-		path: params.path,
-		base64: buf.toString("base64"),
-		mimeType,
-		extraText: params.extraText,
-		details: params.details
-	});
 }
 
 //#endregion
@@ -7190,7 +7634,7 @@ var GatewayClient = class {
 				if (fingerprint !== expected) return /* @__PURE__ */ new Error("gateway tls fingerprint mismatch");
 			});
 		}
-		this.ws = new WebSocket$1(url, wsOptions);
+		this.ws = new WebSocket(url, wsOptions);
 		this.ws.on("open", () => {
 			if (url.startsWith("wss://") && this.opts.tlsFingerprint) {
 				const tlsError = this.validateTlsFingerprint();
@@ -7394,7 +7838,7 @@ var GatewayClient = class {
 		return null;
 	}
 	async request(method, params, opts) {
-		if (!this.ws || this.ws.readyState !== WebSocket$1.OPEN) throw new Error("gateway not connected");
+		if (!this.ws || this.ws.readyState !== WebSocket.OPEN) throw new Error("gateway not connected");
 		const id = randomUUID();
 		const frame = {
 			type: "req",
@@ -9129,7 +9573,7 @@ async function routeReply(params) {
 	const resolvedReplyToId = replyToId ?? (channelId === "slack" && threadId != null && threadId !== "" ? String(threadId) : void 0);
 	const resolvedThreadId = channelId === "slack" ? null : threadId ?? null;
 	try {
-		const { deliverOutboundPayloads } = await import("./deliver-gkaybJr2.js").then((n) => n.n);
+		const { deliverOutboundPayloads } = await import("./deliver-DG07jMo_.js").then((n) => n.n);
 		return {
 			ok: true,
 			messageId: (await deliverOutboundPayloads({
@@ -44594,7 +45038,7 @@ async function describeStickerImage(params) {
 	logVerbose(`telegram: describing sticker with ${provider}/${model}`);
 	try {
 		const buffer = await fs$1.readFile(imagePath);
-		const { describeImageWithModel } = await import("./image-DDaihcie.js").then((n) => n.n);
+		const { describeImageWithModel } = await import("./image-oBptYP_7.js").then((n) => n.n);
 		return (await describeImageWithModel({
 			buffer,
 			fileName: "sticker.webp",
@@ -61085,6 +61529,10 @@ function createPluginRuntime() {
 		tools: {
 			createMemoryGetTool,
 			createMemorySearchTool,
+			createMemorySaveFactTool,
+			createMemorySearchFactsTool,
+			createMemoryUpdateCoreTool,
+			createMemoryConsolidateTool,
 			registerMemoryCli
 		},
 		channel: {
@@ -62250,7 +62698,11 @@ const DEFAULT_SUBAGENT_TOOL_DENY = [
 	"session_status",
 	"cron",
 	"memory_search",
-	"memory_get"
+	"memory_get",
+	"memory_save_fact",
+	"memory_search_facts",
+	"memory_update_core",
+	"memory_consolidate"
 ];
 function resolveSubagentToolPolicy(cfg) {
 	const configured = cfg?.tools?.subagents?.tools;

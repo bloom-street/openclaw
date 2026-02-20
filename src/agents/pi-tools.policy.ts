@@ -96,6 +96,7 @@ const DEFAULT_SUBAGENT_TOOL_DENY = [
   "memory_save_fact",
   "memory_search_facts",
   "memory_update_core",
+  "memory_consolidate",
 ];
 
 export function resolveSubagentToolPolicy(cfg?: OpenClawConfig): SandboxToolPolicy {

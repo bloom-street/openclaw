@@ -301,6 +301,11 @@
       "title": "Update Core Memory",
       "detailKeys": ["file", "action", "section"]
     },
+    "memory_consolidate": {
+      "emoji": "🧹",
+      "title": "Consolidate Memory",
+      "detailKeys": ["scope"]
+    },
     "web_search": {
       "emoji": "🔎",
       "title": "Web Search",
