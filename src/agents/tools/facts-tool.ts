@@ -57,7 +57,7 @@ async function getManager(options: {
   if (!resolveMemorySearchConfig(cfg, agentId)) {
     return null;
   }
-  return MemoryIndexManager.get({ cfg, agentId });
+  return MemoryIndexManager.getFactsOnly({ cfg, agentId });
 }
 
 // ── memory_save_fact ──────────────────────────────────────────────

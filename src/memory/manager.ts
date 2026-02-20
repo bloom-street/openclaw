@@ -220,6 +220,49 @@ export class MemoryIndexManager implements MemorySearchManager {
     return manager;
   }
 
+  /**
+   * Lightweight initializer that only sets up the facts schema (FTS5-based).
+   * Does NOT create an embedding provider, watchers, or session listeners.
+   * Use this when only fact-store operations (saveFact, searchFacts, etc.) are needed.
+   */
+  static async getFactsOnly(params: {
+    cfg: OpenClawConfig;
+    agentId: string;
+  }): Promise<MemoryIndexManager | null> {
+    const { cfg, agentId } = params;
+    const settings = resolveMemorySearchConfig(cfg, agentId);
+    if (!settings) {
+      return null;
+    }
+    const workspaceDir = resolveAgentWorkspaceDir(cfg, agentId);
+    const key = `factsOnly:${agentId}:${workspaceDir}:${settings.store.path}`;
+    const existing = INDEX_CACHE.get(key);
+    if (existing) {
+      return existing;
+    }
+    const noopEmbed = async () => [] as number[];
+    const providerResult: EmbeddingProviderResult = {
+      provider: {
+        id: "none",
+        model: "none",
+        embedQuery: noopEmbed,
+        embedBatch: async (texts: string[]) => texts.map(() => []),
+      },
+      requestedProvider: settings.provider,
+    };
+    const manager = new MemoryIndexManager({
+      cacheKey: key,
+      cfg,
+      agentId,
+      workspaceDir,
+      settings,
+      providerResult,
+      factsOnly: true,
+    });
+    INDEX_CACHE.set(key, manager);
+    return manager;
+  }
+
   private constructor(params: {
     cacheKey: string;
     cfg: OpenClawConfig;
@@ -227,6 +270,7 @@ export class MemoryIndexManager implements MemorySearchManager {
     workspaceDir: string;
     settings: ResolvedMemorySearchConfig;
     providerResult: EmbeddingProviderResult;
+    factsOnly?: boolean;
   }) {
     this.cacheKey = params.cacheKey;
     this.cfg = params.cfg;
@@ -248,6 +292,26 @@ export class MemoryIndexManager implements MemorySearchManager {
       maxEntries: params.settings.cache.maxEntries,
     };
     this.fts = { enabled: params.settings.query.hybrid.enabled, available: false };
+
+    if (params.factsOnly) {
+      // Facts-only mode: only set up the facts schema (FTS5-based),
+      // skip memory index schema, watchers, session listeners, and sync.
+      const factsResult = ensureFactsSchema({ db: this.db });
+      if (factsResult.factsError) {
+        log.warn(`facts schema issue: ${factsResult.factsError}`);
+      }
+      this.vector = { enabled: false, available: false };
+      this.dirty = false;
+      this.batch = {
+        enabled: false,
+        wait: false,
+        concurrency: 1,
+        pollIntervalMs: 2000,
+        timeoutMs: 3600000,
+      };
+      return;
+    }
+
     this.ensureSchema();
     this.vector = {
       enabled: params.settings.store.vector.enabled,
