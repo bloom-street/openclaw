@@ -42,6 +42,15 @@ export declare class MemoryIndexManager implements MemorySearchManager {
         cfg: OpenClawConfig;
         agentId: string;
     }): Promise<MemoryIndexManager | null>;
+    /**
+     * Lightweight initializer that only sets up the facts schema (FTS5-based).
+     * Does NOT create an embedding provider, watchers, or session listeners.
+     * Use this when only fact-store operations (saveFact, searchFacts, etc.) are needed.
+     */
+    static getFactsOnly(params: {
+        cfg: OpenClawConfig;
+        agentId: string;
+    }): Promise<MemoryIndexManager | null>;
     private constructor();
     warmSession(sessionKey?: string): Promise<void>;
     search(query: string, opts?: {
