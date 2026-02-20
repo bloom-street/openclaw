@@ -286,6 +286,21 @@
       "title": "Memory Get",
       "detailKeys": ["path", "from", "lines"]
     },
+    "memory_save_fact": {
+      "emoji": "💾",
+      "title": "Save Fact",
+      "detailKeys": ["entity", "attribute", "value"]
+    },
+    "memory_search_facts": {
+      "emoji": "🔍",
+      "title": "Search Facts",
+      "detailKeys": ["query", "entity"]
+    },
+    "memory_update_core": {
+      "emoji": "📝",
+      "title": "Update Core Memory",
+      "detailKeys": ["file", "action", "section"]
+    },
     "web_search": {
       "emoji": "🔎",
       "title": "Web Search",

@@ -82,6 +82,93 @@ export function ensureMemoryIndexSchema(params: {
   return { ftsAvailable, ...(ftsError ? { ftsError } : {}) };
 }
 
+/**
+ * Creates the structured facts tables for the memory system (Phase 2).
+ * - `facts`: Entity-attribute-value store with temporal tracking
+ * - `facts_fts`: FTS5 virtual table for keyword search over facts
+ * - `consolidation_log`: Tracks consolidation runs for idempotency
+ */
+export function ensureFactsSchema(params: { db: DatabaseSync }): {
+  factsReady: boolean;
+  factsFtsReady: boolean;
+  factsError?: string;
+} {
+  let factsReady = false;
+  let factsFtsReady = false;
+  let factsError: string | undefined;
+
+  try {
+    params.db.exec(`
+      CREATE TABLE IF NOT EXISTS facts (
+        id TEXT PRIMARY KEY,
+        entity TEXT NOT NULL,
+        attribute TEXT NOT NULL,
+        value TEXT NOT NULL,
+        tags TEXT,
+        confidence REAL DEFAULT 1.0,
+        valid_from TEXT NOT NULL,
+        valid_to TEXT,
+        superseded_by TEXT,
+        source TEXT DEFAULT 'conversation',
+        source_conversation_id TEXT,
+        reference_count INTEGER DEFAULT 0,
+        last_referenced_at TEXT,
+        created_at TEXT NOT NULL,
+        embedding BLOB
+      );
+    `);
+
+    params.db.exec(`CREATE INDEX IF NOT EXISTS idx_facts_entity ON facts(entity);`);
+    params.db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_facts_current ON facts(valid_to) WHERE valid_to IS NULL;`,
+    );
+    params.db.exec(`CREATE INDEX IF NOT EXISTS idx_facts_created ON facts(created_at);`);
+    params.db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_facts_stale ON facts(last_referenced_at) WHERE valid_to IS NULL;`,
+    );
+
+    factsReady = true;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    factsError = message;
+    return { factsReady, factsFtsReady, factsError };
+  }
+
+  try {
+    params.db.exec(
+      `CREATE VIRTUAL TABLE IF NOT EXISTS facts_fts USING fts5(\n` +
+        `  entity,\n` +
+        `  attribute,\n` +
+        `  value,\n` +
+        `  tags,\n` +
+        `  fact_id UNINDEXED,\n` +
+        `  tokenize='porter'\n` +
+        `);`,
+    );
+    factsFtsReady = true;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    factsError = message;
+  }
+
+  params.db.exec(`
+    CREATE TABLE IF NOT EXISTS consolidation_log (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      session_id TEXT,
+      facts_added INTEGER DEFAULT 0,
+      facts_updated INTEGER DEFAULT 0,
+      facts_invalidated INTEGER DEFAULT 0,
+      started_at TEXT NOT NULL,
+      completed_at TEXT,
+      model_used TEXT,
+      tokens_used INTEGER
+    );
+  `);
+
+  return { factsReady, factsFtsReady, ...(factsError ? { factsError } : {}) };
+}
+
 function ensureColumn(
   db: DatabaseSync,
   table: "files" | "chunks",

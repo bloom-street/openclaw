@@ -53,7 +53,7 @@ import {
   runWithConcurrency,
 } from "./internal.js";
 import { searchKeyword, searchVector } from "./manager-search.js";
-import { ensureMemoryIndexSchema } from "./memory-schema.js";
+import { ensureFactsSchema, ensureMemoryIndexSchema } from "./memory-schema.js";
 import { loadSqliteVecExtension } from "./sqlite-vec.js";
 import { requireNodeSqlite } from "./sqlite.js";
 
@@ -807,6 +807,10 @@ export class MemoryIndexManager implements MemorySearchManager {
     if (result.ftsError) {
       this.fts.loadError = result.ftsError;
       log.warn(`fts unavailable: ${result.ftsError}`);
+    }
+    const factsResult = ensureFactsSchema({ db: this.db });
+    if (factsResult.factsError) {
+      log.warn(`facts schema issue: ${factsResult.factsError}`);
     }
   }
 
@@ -2408,4 +2412,219 @@ export class MemoryIndexManager implements MemorySearchManager {
       )
       .run(entry.path, options.source, entry.hash, entry.mtimeMs, entry.size);
   }
+
+  // ── Fact Store Operations (Phase 2) ──────────────────────────────
+
+  /** Returns the workspace directory path for file operations. */
+  getWorkspaceDir(): string {
+    return this.workspaceDir;
+  }
+
+  /** Save a structured fact. Handles dedup and temporal invalidation. */
+  saveFact(params: {
+    entity: string;
+    attribute: string;
+    value: string;
+    tags?: string[];
+    confidence?: number;
+    source?: string;
+    sourceConversationId?: string;
+  }): { id: string; message: string; action: "created" | "already_known" | "superseded" } {
+    const now = new Date().toISOString();
+    const entity = params.entity.trim().toLowerCase();
+    const attribute = params.attribute.trim().toLowerCase();
+    const value = params.value.trim();
+    const tags = params.tags ? JSON.stringify(params.tags) : null;
+    const confidence = params.confidence ?? 1.0;
+    const source = params.source ?? "conversation";
+
+    // Check for existing current fact with same entity+attribute
+    const existing = this.db
+      .prepare(
+        `SELECT id, value FROM facts WHERE entity = ? AND attribute = ? AND valid_to IS NULL`,
+      )
+      .all(entity, attribute) as Array<{ id: string; value: string }>;
+
+    // Dedup: same entity+attribute+value = already known
+    const exactMatch = existing.find((f) => f.value === value);
+    if (exactMatch) {
+      return { id: exactMatch.id, message: "Already known.", action: "already_known" };
+    }
+
+    const newId = randomUUID();
+
+    // Temporal invalidation: same entity+attribute, different value = supersede old
+    if (existing.length > 0) {
+      const invalidateStmt = this.db.prepare(
+        `UPDATE facts SET valid_to = ?, superseded_by = ? WHERE id = ?`,
+      );
+      const deleteFtsStmt = this.db.prepare(`DELETE FROM facts_fts WHERE fact_id = ?`);
+      for (const old of existing) {
+        invalidateStmt.run(now, newId, old.id);
+        deleteFtsStmt.run(old.id);
+      }
+    }
+
+    // Insert new fact
+    this.db
+      .prepare(
+        `INSERT INTO facts (id, entity, attribute, value, tags, confidence, valid_from, source, source_conversation_id, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .run(
+        newId,
+        entity,
+        attribute,
+        value,
+        tags,
+        confidence,
+        now,
+        source,
+        params.sourceConversationId ?? null,
+        now,
+      );
+
+    // Insert into FTS5 index
+    this.db
+      .prepare(
+        `INSERT INTO facts_fts (entity, attribute, value, tags, fact_id) VALUES (?, ?, ?, ?, ?)`,
+      )
+      .run(entity, attribute, value, tags ?? "", newId);
+
+    const action = existing.length > 0 ? "superseded" : "created";
+    const message =
+      action === "superseded"
+        ? `Saved (superseded ${existing.length} previous fact${existing.length > 1 ? "s" : ""}).`
+        : "Saved.";
+
+    return { id: newId, message, action };
+  }
+
+  /** Search facts using FTS5 with optional filters. Bumps reference counts. */
+  searchFacts(params: {
+    query: string;
+    entity?: string;
+    tags?: string[];
+    includeHistorical?: boolean;
+    limit?: number;
+  }): { results: FactResult[]; count: number } {
+    const limit = Math.min(params.limit ?? 10, 50);
+    const query = params.query.trim();
+
+    if (!query) {
+      return { results: [], count: 0 };
+    }
+
+    // Build FTS5 query — escape special chars and use implicit AND
+    const ftsQuery = query
+      .replace(/[":*(){}[\]^~\\]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((term) => `"${term}"`)
+      .join(" ");
+
+    if (!ftsQuery) {
+      return { results: [], count: 0 };
+    }
+
+    // Build the SQL with optional filters
+    const conditions: string[] = [];
+    const sqlParams: (string | number | null)[] = [ftsQuery];
+
+    if (!params.includeHistorical) {
+      conditions.push(`f.valid_to IS NULL`);
+    }
+    if (params.entity) {
+      conditions.push(`f.entity = ?`);
+      sqlParams.push(params.entity.trim().toLowerCase());
+    }
+    if (params.tags && params.tags.length > 0) {
+      // Match any tag using JSON
+      const tagConditions = params.tags.map(() => `f.tags LIKE ?`);
+      conditions.push(`(${tagConditions.join(" OR ")})`);
+      for (const tag of params.tags) {
+        sqlParams.push(`%${JSON.stringify(tag).slice(1, -1)}%`);
+      }
+    }
+
+    const whereClause = conditions.length > 0 ? ` AND ${conditions.join(" AND ")}` : "";
+    sqlParams.push(limit);
+
+    const sql =
+      `SELECT f.id, f.entity, f.attribute, f.value, f.tags, f.confidence,` +
+      `  f.valid_from, f.valid_to, f.superseded_by, f.source, f.reference_count,` +
+      `  f.last_referenced_at, f.created_at,` +
+      `  bm25(facts_fts) AS rank` +
+      ` FROM facts_fts AS fts` +
+      ` JOIN facts AS f ON fts.fact_id = f.id` +
+      ` WHERE facts_fts MATCH ?${whereClause}` +
+      ` ORDER BY rank` +
+      ` LIMIT ?`;
+
+    const rows = this.db.prepare(sql).all(...sqlParams) as FactRow[];
+
+    if (rows.length === 0) {
+      return { results: [], count: 0 };
+    }
+
+    // Bump reference counts
+    const now = new Date().toISOString();
+    const updateStmt = this.db.prepare(
+      `UPDATE facts SET reference_count = reference_count + 1, last_referenced_at = ? WHERE id = ?`,
+    );
+    for (const row of rows) {
+      updateStmt.run(now, row.id);
+    }
+
+    const results: FactResult[] = rows.map((row) => ({
+      id: row.id,
+      entity: row.entity,
+      attribute: row.attribute,
+      value: row.value,
+      tags: row.tags ? (JSON.parse(row.tags) as string[]) : [],
+      confidence: row.confidence,
+      valid_from: row.valid_from,
+      valid_to: row.valid_to ?? undefined,
+      superseded_by: row.superseded_by ?? undefined,
+      source: row.source,
+      reference_count: row.reference_count + 1,
+      created_at: row.created_at,
+    }));
+
+    return { results, count: results.length };
+  }
 }
+
+// ── Fact Types ────────────────────────────────────────────────────
+
+type FactRow = {
+  id: string;
+  entity: string;
+  attribute: string;
+  value: string;
+  tags: string | null;
+  confidence: number;
+  valid_from: string;
+  valid_to: string | null;
+  superseded_by: string | null;
+  source: string;
+  reference_count: number;
+  last_referenced_at: string | null;
+  created_at: string;
+  rank?: number;
+};
+
+export type FactResult = {
+  id: string;
+  entity: string;
+  attribute: string;
+  value: string;
+  tags: string[];
+  confidence: number;
+  valid_from: string;
+  valid_to?: string;
+  superseded_by?: string;
+  source: string;
+  reference_count: number;
+  created_at: string;
+};
