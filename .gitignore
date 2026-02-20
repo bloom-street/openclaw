@@ -2,7 +2,8 @@ node_modules
 **/node_modules/
 .env
 docker-compose.extra.yml
-dist
+# dist — checked in on openpulse branch (required for git dependency install)
+# dist
 pnpm-lock.yaml
 bun.lock
 bun.lockb
