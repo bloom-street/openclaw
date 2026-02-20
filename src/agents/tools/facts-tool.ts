@@ -241,7 +241,11 @@ export function createMemoryUpdateCoreTool(options: {
               return jsonResult({ error: "section is required for append_section" });
             }
             const sectionHeader = section.startsWith("#") ? section : `## ${section}`;
-            updated = existing.trimEnd() + `\n\n${sectionHeader}\n${content}\n`;
+            if (existing.trim().length === 0) {
+              updated = `${sectionHeader}\n${content}\n`;
+            } else {
+              updated = existing.trimEnd() + `\n\n${sectionHeader}\n${content}\n`;
+            }
             break;
           }
           case "replace_section": {
@@ -249,42 +253,38 @@ export function createMemoryUpdateCoreTool(options: {
               return jsonResult({ error: "section is required for replace_section" });
             }
             const sectionName = section.replace(/^#+\s*/, "");
-            const sectionRegex = new RegExp(
-              `(^#{1,3}\\s+${escapeRegExp(sectionName)}\\s*$)\\n([\\s\\S]*?)(?=^#{1,3}\\s|\\Z)`,
-              "m",
-            );
-            const match = sectionRegex.exec(existing);
-            if (!match) {
+            const bounds = findSectionBounds(existing, sectionName);
+            if (!bounds) {
               return jsonResult({
                 error: `Section "${sectionName}" not found in ${file}. Use append_section to create it.`,
               });
             }
             updated =
-              existing.slice(0, match.index) +
-              `${match[1]}\n${content}\n` +
-              existing.slice(match.index + match[0].length);
+              existing.slice(0, bounds.headerStart) +
+              bounds.headerLine +
+              "\n" +
+              content +
+              "\n" +
+              existing.slice(bounds.contentEnd);
             break;
           }
           case "append_line": {
             if (section) {
               const sectionName = section.replace(/^#+\s*/, "");
-              const sectionRegex = new RegExp(
-                `(^#{1,3}\\s+${escapeRegExp(sectionName)}\\s*$\\n)([\\s\\S]*?)(?=^#{1,3}\\s|$)`,
-                "m",
-              );
-              const match = sectionRegex.exec(existing);
-              if (!match) {
+              const bounds = findSectionBounds(existing, sectionName);
+              if (!bounds) {
                 return jsonResult({
                   error: `Section "${sectionName}" not found in ${file}.`,
                 });
               }
-              const insertPos = match.index + match[0].length;
               updated =
-                existing.slice(0, insertPos).trimEnd() +
-                `\n${content}\n` +
-                existing.slice(insertPos);
+                existing.slice(0, bounds.contentEnd).trimEnd() +
+                "\n" +
+                content +
+                "\n" +
+                existing.slice(bounds.contentEnd);
             } else {
-              updated = existing.trimEnd() + `\n${content}\n`;
+              updated = existing.trimEnd() + "\n" + content + "\n";
             }
             break;
           }
@@ -320,6 +320,51 @@ export function createMemoryUpdateCoreTool(options: {
   };
 }
 
-function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/**
+ * Find a markdown section by name. Returns the byte offsets for the header line
+ * and the content block (everything between this header and the next header or EOF).
+ * Uses line-based scanning instead of regex to avoid multiline flag issues.
+ */
+function findSectionBounds(
+  text: string,
+  sectionName: string,
+): { headerStart: number; headerLine: string; contentStart: number; contentEnd: number } | null {
+  const lines = text.split("\n");
+  const target = sectionName.toLowerCase();
+  let offset = 0;
+  let headerStart = -1;
+  let headerLine = "";
+  let contentStart = -1;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const lineStart = offset;
+    offset += line.length + 1; // +1 for \n
+
+    const headerMatch = /^(#{1,3})\s+(.+?)\s*$/.exec(line);
+    if (!headerMatch) {
+      continue;
+    }
+
+    const name = headerMatch[2].toLowerCase();
+
+    if (headerStart === -1) {
+      // Looking for the target section
+      if (name === target) {
+        headerStart = lineStart;
+        headerLine = line;
+        contentStart = offset; // byte after the header's \n
+      }
+    } else {
+      // Found the target earlier — this is the next header, so content ends here
+      return { headerStart, headerLine, contentStart, contentEnd: lineStart };
+    }
+  }
+
+  if (headerStart !== -1) {
+    // Target section is the last section — content extends to EOF
+    return { headerStart, headerLine, contentStart, contentEnd: text.length };
+  }
+
+  return null;
 }

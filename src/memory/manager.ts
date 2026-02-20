@@ -2453,43 +2453,54 @@ export class MemoryIndexManager implements MemorySearchManager {
 
     const newId = randomUUID();
 
-    // Temporal invalidation: same entity+attribute, different value = supersede old
-    if (existing.length > 0) {
-      const invalidateStmt = this.db.prepare(
-        `UPDATE facts SET valid_to = ?, superseded_by = ? WHERE id = ?`,
-      );
-      const deleteFtsStmt = this.db.prepare(`DELETE FROM facts_fts WHERE fact_id = ?`);
-      for (const old of existing) {
-        invalidateStmt.run(now, newId, old.id);
-        deleteFtsStmt.run(old.id);
+    try {
+      this.db.exec("BEGIN");
+
+      // Temporal invalidation: same entity+attribute, different value = supersede old
+      if (existing.length > 0) {
+        const invalidateStmt = this.db.prepare(
+          `UPDATE facts SET valid_to = ?, superseded_by = ? WHERE id = ?`,
+        );
+        const deleteFtsStmt = this.db.prepare(`DELETE FROM facts_fts WHERE fact_id = ?`);
+        for (const old of existing) {
+          invalidateStmt.run(now, newId, old.id);
+          deleteFtsStmt.run(old.id);
+        }
       }
+
+      // Insert new fact
+      this.db
+        .prepare(
+          `INSERT INTO facts (id, entity, attribute, value, tags, confidence, valid_from, source, source_conversation_id, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          newId,
+          entity,
+          attribute,
+          value,
+          tags,
+          confidence,
+          now,
+          source,
+          params.sourceConversationId ?? null,
+          now,
+        );
+
+      // Insert into FTS5 index
+      this.db
+        .prepare(
+          `INSERT INTO facts_fts (entity, attribute, value, tags, fact_id) VALUES (?, ?, ?, ?, ?)`,
+        )
+        .run(entity, attribute, value, tags ?? "", newId);
+
+      this.db.exec("COMMIT");
+    } catch (err) {
+      try {
+        this.db.exec("ROLLBACK");
+      } catch {}
+      throw err;
     }
-
-    // Insert new fact
-    this.db
-      .prepare(
-        `INSERT INTO facts (id, entity, attribute, value, tags, confidence, valid_from, source, source_conversation_id, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      )
-      .run(
-        newId,
-        entity,
-        attribute,
-        value,
-        tags,
-        confidence,
-        now,
-        source,
-        params.sourceConversationId ?? null,
-        now,
-      );
-
-    // Insert into FTS5 index
-    this.db
-      .prepare(
-        `INSERT INTO facts_fts (entity, attribute, value, tags, fact_id) VALUES (?, ?, ?, ?, ?)`,
-      )
-      .run(entity, attribute, value, tags ?? "", newId);
 
     const action = existing.length > 0 ? "superseded" : "created";
     const message =
@@ -2555,10 +2566,10 @@ export class MemoryIndexManager implements MemorySearchManager {
       `  f.valid_from, f.valid_to, f.superseded_by, f.source, f.reference_count,` +
       `  f.last_referenced_at, f.created_at,` +
       `  bm25(facts_fts) AS rank` +
-      ` FROM facts_fts AS fts` +
-      ` JOIN facts AS f ON fts.fact_id = f.id` +
+      ` FROM facts_fts` +
+      ` JOIN facts AS f ON facts_fts.fact_id = f.id` +
       ` WHERE facts_fts MATCH ?${whereClause}` +
-      ` ORDER BY rank` +
+      ` ORDER BY rank ASC` +
       ` LIMIT ?`;
 
     const rows = this.db.prepare(sql).all(...sqlParams) as FactRow[];
