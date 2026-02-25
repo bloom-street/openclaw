@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { runCommandWithTimeout } from "../process/exec.js";
-import { fetchWithTimeout } from "../utils/fetch-timeout.js";
 import { detectPackageManager as detectPackageManagerImpl } from "./detect-package-manager.js";
 import { channelToNpmTag, type UpdateChannel } from "./update-channels.js";
 
@@ -283,37 +282,19 @@ export async function checkDepsStatus(params: {
   };
 }
 
-export async function fetchNpmLatestVersion(params?: {
+export async function fetchNpmLatestVersion(_params?: {
   timeoutMs?: number;
 }): Promise<RegistryStatus> {
-  const res = await fetchNpmTagVersion({ tag: "latest", timeoutMs: params?.timeoutMs });
-  return {
-    latestVersion: res.version,
-    error: res.error,
-  };
+  // Osera fork: no npm registry calls
+  return { latestVersion: null };
 }
 
 export async function fetchNpmTagVersion(params: {
   tag: string;
   timeoutMs?: number;
 }): Promise<NpmTagStatus> {
-  const timeoutMs = params?.timeoutMs ?? 3500;
-  const tag = params.tag;
-  try {
-    const res = await fetchWithTimeout(
-      `https://registry.npmjs.org/openclaw/${encodeURIComponent(tag)}`,
-      {},
-      Math.max(250, timeoutMs),
-    );
-    if (!res.ok) {
-      return { tag, version: null, error: `HTTP ${res.status}` };
-    }
-    const json = (await res.json()) as { version?: unknown };
-    const version = typeof json?.version === "string" ? json.version : null;
-    return { tag, version };
-  } catch (err) {
-    return { tag, version: null, error: String(err) };
-  }
+  // Osera fork: no npm registry calls
+  return { tag: params.tag, version: null };
 }
 
 export async function resolveNpmChannelTag(params: {

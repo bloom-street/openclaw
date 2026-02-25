@@ -1,8 +1,8 @@
 import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { formatCliCommand } from "../cli/command-format.js";
 import type { loadConfig } from "../config/config.js";
+import { formatCliCommand } from "../cli/command-format.js";
 import { resolveStateDir } from "../config/paths.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import { VERSION } from "../version.js";
@@ -309,6 +309,9 @@ export async function runGatewayUpdateCheck(params: {
     root?: string;
   }) => Promise<AutoUpdateRunResult>;
 }): Promise<void> {
+  // Osera fork: update checks permanently disabled — no phone-home to upstream
+  return;
+
   if (shouldSkipCheck(Boolean(params.allowInTests))) {
     return;
   }
