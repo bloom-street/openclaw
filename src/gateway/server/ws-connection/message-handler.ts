@@ -418,7 +418,10 @@ export function attachGatewayWsMessageHandler(params: {
           close(1008, truncateCloseReason(authMessage));
         };
         const clearUnboundScopes = () => {
-          if (scopes.length > 0 && !controlUiAuthPolicy.allowBypass) {
+          // Osera fork: preserve scopes when shared auth is OK (WireGuard tunnel).
+          // Upstream strips scopes without device identity to prevent escalation,
+          // but our deployment trusts shared auth over the WireGuard tunnel.
+          if (scopes.length > 0 && !controlUiAuthPolicy.allowBypass && !sharedAuthOk) {
             scopes = [];
             connectParams.scopes = scopes;
           }
