@@ -749,10 +749,9 @@ export class MemoryIndexManager extends MemoryManagerEmbeddingOps implements Mem
         const invalidateStmt = this.db.prepare(
           `UPDATE facts SET valid_to = ?, superseded_by = ? WHERE id = ?`,
         );
-        const deleteFtsStmt = this.db.prepare(`DELETE FROM facts_fts WHERE fact_id = ?`);
         for (const old of existing) {
           invalidateStmt.run(now, newId, old.id);
-          deleteFtsStmt.run(old.id);
+          // Keep FTS entries for superseded facts so include_historical search works.
         }
       }
 

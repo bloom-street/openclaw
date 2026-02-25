@@ -13,10 +13,12 @@ describe("gateway role policy", () => {
     expect(parseGatewayRole(undefined)).toBeNull();
   });
 
-  test("allows device-less bypass only for operator + shared auth", () => {
+  test("allows device-less bypass for any role with shared auth", () => {
     expect(roleCanSkipDeviceIdentity("operator", true)).toBe(true);
     expect(roleCanSkipDeviceIdentity("operator", false)).toBe(false);
-    expect(roleCanSkipDeviceIdentity("node", true)).toBe(false);
+    // Osera fork: node role with shared auth is allowed (WireGuard tunnel)
+    expect(roleCanSkipDeviceIdentity("node", true)).toBe(true);
+    expect(roleCanSkipDeviceIdentity("node", false)).toBe(false);
   });
 
   test("authorizes roles against node vs operator methods", () => {
