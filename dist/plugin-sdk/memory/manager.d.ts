@@ -2,9 +2,9 @@ import type { DatabaseSync } from "node:sqlite";
 import { type FSWatcher } from "chokidar";
 import type { ResolvedMemorySearchConfig } from "../agents/memory-search.js";
 import type { OpenClawConfig } from "../config/config.js";
-import type { MemoryEmbeddingProbeResult, MemoryProviderStatus, MemorySearchManager, MemorySearchResult, MemorySource, MemorySyncProgressUpdate } from "./types.js";
 import { type EmbeddingProvider, type GeminiEmbeddingClient, type MistralEmbeddingClient, type OpenAiEmbeddingClient, type VoyageEmbeddingClient } from "./embeddings.js";
 import { MemoryManagerEmbeddingOps } from "./manager-embedding-ops.js";
+import type { MemoryEmbeddingProbeResult, MemoryProviderStatus, MemorySearchManager, MemorySearchResult, MemorySource, MemorySyncProgressUpdate } from "./types.js";
 export declare class MemoryIndexManager extends MemoryManagerEmbeddingOps implements MemorySearchManager {
     private readonly cacheKey;
     protected readonly cfg: OpenClawConfig;

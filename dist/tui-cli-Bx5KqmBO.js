@@ -1,0 +1,84 @@
+import "./paths-B4BZAPZh.js";
+import { B as theme } from "./utils-7gb3VEps.js";
+import "./thinking-EAliFiVK.js";
+import "./agent-scope-nvzGbP5e.js";
+import { f as defaultRuntime } from "./subsystem-C5Sd3JES.js";
+import "./exec-DnsD91Q4.js";
+import "./model-selection-DooR7GQG.js";
+import "./github-copilot-token-nncItI8D.js";
+import "./boolean-BgXe2hyu.js";
+import "./env-DkKx0PT3.js";
+import "./host-env-security-ljCLeQmh.js";
+import "./message-channel-C8Keu0lE.js";
+import "./config-DNKWBHAH.js";
+import "./env-vars-CvvqezS9.js";
+import "./manifest-registry-C6u54rI3.js";
+import "./dock-ivyty9f-.js";
+import "./pi-embedded-helpers-idVtyWAc.js";
+import "./sandbox-CONeCP-4.js";
+import "./tool-catalog-BsPk0Mtw.js";
+import "./chrome-DG3CD5t4.js";
+import "./tailscale-iTlFoOvr.js";
+import "./ip-D0zgNmBV.js";
+import "./tailnet-CEudzG0i.js";
+import "./ws-BTdBA7Dw.js";
+import "./auth-Byh9Posp.js";
+import "./server-context-Dko19I6m.js";
+import "./frontmatter-DR47FZL2.js";
+import "./skills-H7U30Ato.js";
+import "./redact-DKEWQ4ef.js";
+import "./errors-DiV2hVgY.js";
+import "./fs-safe-DwCRJYoe.js";
+import "./trash-BlINPotY.js";
+import "./ssrf-D0C-ivqd.js";
+import "./image-ops-CT4_RMYw.js";
+import "./store-to0SxvTa.js";
+import "./ports-CMYOQ1Xv.js";
+import "./server-middleware-CQ0JmE7W.js";
+import "./sessions-BVFFX_jz.js";
+import "./plugins-BpAzc5Av.js";
+import "./accounts-CvQo4BE0.js";
+import "./accounts-C-f1i1Zq.js";
+import "./accounts-D5BIfedQ.js";
+import "./bindings-n9iduK6p.js";
+import "./logging-B-Pt-Wis.js";
+import "./paths-DI5fQaUg.js";
+import "./chat-envelope-CurikSJo.js";
+import "./tool-images-GXybOr7q.js";
+import "./tool-display-BAoLiO2t.js";
+import "./commands-C2YxYKKq.js";
+import "./commands-registry-DO8Ftxlm.js";
+import "./client-Bri_7bSd.js";
+import "./call--R2Hm6fa.js";
+import "./pairing-token-CQfAUfX7.js";
+import { t as formatDocsLink } from "./links-syoLpaiN.js";
+import { t as parseTimeoutMs } from "./parse-timeout-BPraucmT.js";
+import { t as runTui } from "./tui-l-mqM2ps.js";
+
+//#region src/cli/tui-cli.ts
+function registerTuiCli(program) {
+	program.command("tui").description("Open a terminal UI connected to the Gateway").option("--url <url>", "Gateway WebSocket URL (defaults to gateway.remote.url when configured)").option("--token <token>", "Gateway token (if required)").option("--password <password>", "Gateway password (if required)").option("--session <key>", "Session key (default: \"main\", or \"global\" when scope is global)").option("--deliver", "Deliver assistant replies", false).option("--thinking <level>", "Thinking level override").option("--message <text>", "Send an initial message after connecting").option("--timeout-ms <ms>", "Agent timeout in ms (defaults to agents.defaults.timeoutSeconds)").option("--history-limit <n>", "History entries to load", "200").addHelpText("after", () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/tui", "docs.openclaw.ai/cli/tui")}\n`).action(async (opts) => {
+		try {
+			const timeoutMs = parseTimeoutMs(opts.timeoutMs);
+			if (opts.timeoutMs !== void 0 && timeoutMs === void 0) defaultRuntime.error(`warning: invalid --timeout-ms "${String(opts.timeoutMs)}"; ignoring`);
+			const historyLimit = Number.parseInt(String(opts.historyLimit ?? "200"), 10);
+			await runTui({
+				url: opts.url,
+				token: opts.token,
+				password: opts.password,
+				session: opts.session,
+				deliver: Boolean(opts.deliver),
+				thinking: opts.thinking,
+				message: opts.message,
+				timeoutMs,
+				historyLimit: Number.isNaN(historyLimit) ? void 0 : historyLimit
+			});
+		} catch (err) {
+			defaultRuntime.error(String(err));
+			defaultRuntime.exit(1);
+		}
+	});
+}
+
+//#endregion
+export { registerTuiCli };
