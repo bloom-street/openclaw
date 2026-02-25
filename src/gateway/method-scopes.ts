@@ -19,7 +19,13 @@ export const CLI_DEFAULT_OPERATOR_SCOPES: OperatorScope[] = [
   PAIRING_SCOPE,
 ];
 
-const NODE_ROLE_METHODS = new Set(["node.invoke.result", "node.event", "skills.bins"]);
+const NODE_ROLE_METHODS = new Set([
+  "node.invoke.result",
+  "node.event",
+  "skills.bins",
+  "node.list", // allow plugins to discover other nodes
+  "node.invoke", // allow plugins to execute commands on other nodes
+]);
 
 const METHOD_SCOPE_GROUPS: Record<OperatorScope, readonly string[]> = {
   [APPROVALS_SCOPE]: [
