@@ -1,2 +1,2 @@
 // Legacy shim for pre-tsdown update-cli imports.
-export { registerDaemonCli, runDaemonInstall, runDaemonRestart, runDaemonStart, runDaemonStatus, runDaemonStop, runDaemonUninstall } from "../daemon-cli-BNcCYt0s.js";
+export { registerDaemonCli, runDaemonInstall, runDaemonRestart, runDaemonStart, runDaemonStatus, runDaemonStop, runDaemonUninstall } from "../daemon-cli-DO6AMXOm.js";

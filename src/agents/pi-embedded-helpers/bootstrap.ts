@@ -187,6 +187,10 @@ export function buildBootstrapContextFiles(
       content: trimmed.content,
     });
   }
+  if (opts?.warn && result.length > 0) {
+    const summary = result.map((f) => `${f.path}(${f.content?.length ?? 0})`).join(", ");
+    opts.warn(`bootstrap files loaded: ${summary}`);
+  }
   return result;
 }
 

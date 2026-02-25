@@ -18,6 +18,7 @@ export declare const AgentsSchema: z.ZodOptional<z.ZodObject<{
         repoRoot: z.ZodOptional<z.ZodString>;
         skipBootstrap: z.ZodOptional<z.ZodBoolean>;
         bootstrapMaxChars: z.ZodOptional<z.ZodNumber>;
+        extraBootstrapFiles: z.ZodOptional<z.ZodArray<z.ZodString>>;
         userTimezone: z.ZodOptional<z.ZodString>;
         timeFormat: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<"auto">, z.ZodLiteral<"12">, z.ZodLiteral<"24">]>>;
         envelopeTimezone: z.ZodOptional<z.ZodString>;

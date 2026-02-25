@@ -29,5 +29,5 @@ export declare function ensureAgentWorkspace(params?: {
     heartbeatPath?: string;
     bootstrapPath?: string;
 }>;
-export declare function loadWorkspaceBootstrapFiles(dir: string): Promise<WorkspaceBootstrapFile[]>;
+export declare function loadWorkspaceBootstrapFiles(dir: string, extraFiles?: string[]): Promise<WorkspaceBootstrapFile[]>;
 export declare function filterBootstrapFilesForSession(files: WorkspaceBootstrapFile[], sessionKey?: string): WorkspaceBootstrapFile[];

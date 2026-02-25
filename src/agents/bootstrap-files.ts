@@ -26,8 +26,9 @@ export async function resolveBootstrapFilesForRun(params: {
   agentId?: string;
 }): Promise<WorkspaceBootstrapFile[]> {
   const sessionKey = params.sessionKey ?? params.sessionId;
+  const extraBootstrapFiles = params.config?.agents?.defaults?.extraBootstrapFiles;
   const bootstrapFiles = filterBootstrapFilesForSession(
-    await loadWorkspaceBootstrapFiles(params.workspaceDir),
+    await loadWorkspaceBootstrapFiles(params.workspaceDir, extraBootstrapFiles),
     sessionKey,
   );
   return applyBootstrapHookOverrides({

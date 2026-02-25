@@ -9904,6 +9904,7 @@ const AgentDefaultsSchema = z.object({
 	repoRoot: z.string().optional(),
 	skipBootstrap: z.boolean().optional(),
 	bootstrapMaxChars: z.number().int().positive().optional(),
+	extraBootstrapFiles: z.array(z.string()).max(5).optional(),
 	userTimezone: z.string().optional(),
 	timeFormat: z.union([
 		z.literal("auto"),
