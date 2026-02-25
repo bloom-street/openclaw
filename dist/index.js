@@ -119,7 +119,7 @@ import { t as ensureOpenClawCliOnPath } from "./path-env-Js9KsvFg.js";
 import { t as assertSupportedRuntime } from "./runtime-guard-BPCV9VPD.js";
 import "./ports-Br8mjRp7.js";
 import { a as hasFlag, i as getVerboseFlag, n as getCommandPath, o as hasHelpOrVersion, s as hasRootVersionAlias } from "./argv-K2xNvkeC.js";
-import { i as getCoreCliCommandsWithSubcommands, n as setProgramContext, o as registerProgramCommands, s as getSubCliCommandsWithSubcommands } from "./program-context-JtshdWBE.js";
+import { i as getCoreCliCommandsWithSubcommands, n as setProgramContext, o as registerProgramCommands, s as getSubCliCommandsWithSubcommands } from "./program-context-rzd5VhdF.js";
 import "./catalog-DSCBeNDx.js";
 import "./plugin-registry-yxHU74DE.js";
 import { n as resolveCliChannelOptions } from "./channel-options-MgvIwO_j.js";
