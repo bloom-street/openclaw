@@ -2,7 +2,7 @@
 import "./paths-B4BZAPZh.js";
 import { B as theme, P as setVerbose, Q as tryParseLogLevel, T as toWhatsappJid, Y as ALLOWED_LOG_LEVELS, l as escapeRegExp, m as normalizeE164, n as assertWebChannel, z as isRich } from "./utils-7gb3VEps.js";
 import "./thinking-EAliFiVK.js";
-import { Tt as resolveCommitHash, Wt as createDefaultDeps, t as getReplyFromConfig } from "./reply-1GIdS6Fd.js";
+import { Tt as resolveCommitHash, Wt as createDefaultDeps, t as getReplyFromConfig } from "./reply-DQye6iZ-.js";
 import "./agent-scope-nvzGbP5e.js";
 import { f as defaultRuntime, r as enableConsoleCapture, u as visibleWidth } from "./subsystem-C5Sd3JES.js";
 import { n as runExec, t as runCommandWithTimeout } from "./exec-DnsD91Q4.js";
@@ -81,8 +81,8 @@ import "./diagnostic--FsaT1D9.js";
 import "./send-Ch5nPbw4.js";
 import "./model-BwDKysjD.js";
 import "./reply-prefix-GUnERdIb.js";
-import "./manager-DlMbml4y.js";
-import "./memory-cli-CjaBzQyD.js";
+import "./manager-BO2R5-KI.js";
+import "./memory-cli-BMzOv8ao.js";
 import "./chunk-gB6ZX5eV.js";
 import "./markdown-tables-DCCnx4EK.js";
 import "./ir-DwskLeFt.js";
@@ -110,7 +110,7 @@ import "./pairing-labels-hp8UWhD3.js";
 import "./server-lifecycle-DRkdnrWW.js";
 import "./stagger-C9cy2z6C.js";
 import "./pi-tools.policy-B9HAe4-l.js";
-import { r as waitForever, t as monitorWebChannel } from "./channel-web-nFZMtEVb.js";
+import { r as waitForever, t as monitorWebChannel } from "./channel-web-YSNzyVpY.js";
 import "./outbound-B9VR6ytp.js";
 import "./session-i3OluoCu.js";
 import "./login-CocXBxu3.js";
@@ -119,10 +119,10 @@ import { t as ensureOpenClawCliOnPath } from "./path-env-Js9KsvFg.js";
 import { t as assertSupportedRuntime } from "./runtime-guard-BPCV9VPD.js";
 import "./ports-Br8mjRp7.js";
 import { a as hasFlag, i as getVerboseFlag, n as getCommandPath, o as hasHelpOrVersion, s as hasRootVersionAlias } from "./argv-K2xNvkeC.js";
-import { i as getCoreCliCommandsWithSubcommands, n as setProgramContext, o as registerProgramCommands, s as getSubCliCommandsWithSubcommands } from "./program-context-BzqufGfE.js";
+import { i as getCoreCliCommandsWithSubcommands, n as setProgramContext, o as registerProgramCommands, s as getSubCliCommandsWithSubcommands } from "./program-context-JtshdWBE.js";
 import "./catalog-DSCBeNDx.js";
-import "./plugin-registry-CNv4moQI.js";
-import { n as resolveCliChannelOptions } from "./channel-options-DlIqkXTv.js";
+import "./plugin-registry-yxHU74DE.js";
+import { n as resolveCliChannelOptions } from "./channel-options-MgvIwO_j.js";
 import process$1 from "node:process";
 import { fileURLToPath } from "node:url";
 import { Command, InvalidArgumentError } from "commander";
@@ -547,7 +547,7 @@ function registerPreActionHooks(program, programVersion) {
 			commandPath
 		});
 		if (PLUGIN_REQUIRED_COMMANDS.has(commandPath[0])) {
-			const { ensurePluginRegistryLoaded } = await import("./plugin-registry-CNv4moQI.js").then((n) => n.n);
+			const { ensurePluginRegistryLoaded } = await import("./plugin-registry-yxHU74DE.js").then((n) => n.n);
 			ensurePluginRegistryLoaded();
 		}
 	});
