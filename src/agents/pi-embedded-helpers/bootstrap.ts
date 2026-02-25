@@ -1,10 +1,10 @@
+import type { AgentMessage } from "@mariozechner/pi-agent-core";
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { AgentMessage } from "@mariozechner/pi-agent-core";
 import type { OpenClawConfig } from "../../config/config.js";
-import { truncateUtf16Safe } from "../../utils.js";
 import type { WorkspaceBootstrapFile } from "../workspace.js";
 import type { EmbeddedContextFile } from "./types.js";
+import { truncateUtf16Safe } from "../../utils.js";
 
 type ContentBlockWithSignature = {
   thought_signature?: unknown;
@@ -241,6 +241,10 @@ export function buildBootstrapContextFiles(
       path: pathValue,
       content: contentWithinBudget,
     });
+  }
+  if (opts?.warn && result.length > 0) {
+    const summary = result.map((f) => `${f.path}(${f.content?.length ?? 0})`).join(", ");
+    opts.warn(`bootstrap files loaded: ${summary}`);
   }
   return result;
 }

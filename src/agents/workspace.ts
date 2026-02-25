@@ -438,7 +438,23 @@ async function resolveMemoryBootstrapEntries(
   return deduped;
 }
 
-export async function loadWorkspaceBootstrapFiles(dir: string): Promise<WorkspaceBootstrapFile[]> {
+const MAX_EXTRA_BOOTSTRAP_FILES = 5;
+
+function validateExtraBootstrapPath(name: string): boolean {
+  return (
+    name.endsWith(".md") &&
+    !path.isAbsolute(name) &&
+    !name.includes("..") &&
+    !name.includes("/") &&
+    name.length > 0 &&
+    name.length <= 64
+  );
+}
+
+export async function loadWorkspaceBootstrapFiles(
+  dir: string,
+  extraFiles?: string[],
+): Promise<WorkspaceBootstrapFile[]> {
   const resolvedDir = resolveUserPath(dir);
 
   const entries: Array<{
@@ -476,6 +492,18 @@ export async function loadWorkspaceBootstrapFiles(dir: string): Promise<Workspac
   ];
 
   entries.push(...(await resolveMemoryBootstrapEntries(resolvedDir)));
+
+  if (extraFiles) {
+    const validated = extraFiles
+      .slice(0, MAX_EXTRA_BOOTSTRAP_FILES)
+      .filter(validateExtraBootstrapPath);
+    for (const name of validated) {
+      entries.push({
+        name: name as WorkspaceBootstrapFileName,
+        filePath: path.join(resolvedDir, name),
+      });
+    }
+  }
 
   const result: WorkspaceBootstrapFile[] = [];
   for (const entry of entries) {

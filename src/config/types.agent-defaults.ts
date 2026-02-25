@@ -132,6 +132,8 @@ export type AgentDefaultsConfig = {
   skipBootstrap?: boolean;
   /** Max chars for injected bootstrap files before truncation (default: 20000). */
   bootstrapMaxChars?: number;
+  /** Additional .md files from workspace dir loaded into the system prompt after MEMORY.md (max 5, flat names only). */
+  extraBootstrapFiles?: string[];
   /** Max total chars across all injected bootstrap files (default: 150000). */
   bootstrapTotalMaxChars?: number;
   /** Optional IANA timezone for the user (used in system prompt; defaults to host timezone). */
