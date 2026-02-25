@@ -26,6 +26,36 @@ const memoryCorePlugin = {
       { names: ["memory_search", "memory_get"] },
     );
 
+    // Fact store tools (FTS5-based, no embedding provider required)
+    api.registerTool(
+      (ctx) => {
+        const saveFactTool = api.runtime.tools.createMemorySaveFactTool({
+          config: ctx.config,
+        });
+        const searchFactsTool = api.runtime.tools.createMemorySearchFactsTool({
+          config: ctx.config,
+        });
+        const updateCoreTool = api.runtime.tools.createMemoryUpdateCoreTool({
+          config: ctx.config,
+        });
+        const consolidateTool = api.runtime.tools.createMemoryConsolidateTool({
+          config: ctx.config,
+        });
+        const tools = [saveFactTool, searchFactsTool, updateCoreTool, consolidateTool].filter(
+          Boolean,
+        );
+        return tools.length > 0 ? tools : null;
+      },
+      {
+        names: [
+          "memory_save_fact",
+          "memory_search_facts",
+          "memory_update_core",
+          "memory_consolidate",
+        ],
+      },
+    );
+
     api.registerCli(
       ({ program }) => {
         api.runtime.tools.registerMemoryCli(program);

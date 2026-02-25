@@ -1,5 +1,12 @@
 import { createRequire } from "node:module";
+import type { PluginRuntime } from "./types.js";
 import { resolveEffectiveMessagesConfig, resolveHumanDelayConfig } from "../../agents/identity.js";
+import { createMemoryConsolidateTool } from "../../agents/tools/consolidation-tool.js";
+import {
+  createMemorySaveFactTool,
+  createMemorySearchFactsTool,
+  createMemoryUpdateCoreTool,
+} from "../../agents/tools/facts-tool.js";
 import { createMemoryGetTool, createMemorySearchTool } from "../../agents/tools/memory-tool.js";
 import { handleSlackAction } from "../../agents/tools/slack-actions.js";
 import {
@@ -138,7 +145,6 @@ import {
 } from "../../web/auth-store.js";
 import { loadWebMedia } from "../../web/media.js";
 import { formatNativeDependencyHint } from "./native-deps.js";
-import type { PluginRuntime } from "./types.js";
 
 let cachedVersion: string | null = null;
 
@@ -280,6 +286,10 @@ function createRuntimeTools(): PluginRuntime["tools"] {
   return {
     createMemoryGetTool,
     createMemorySearchTool,
+    createMemorySaveFactTool,
+    createMemorySearchFactsTool,
+    createMemoryUpdateCoreTool,
+    createMemoryConsolidateTool,
     registerMemoryCli,
   };
 }

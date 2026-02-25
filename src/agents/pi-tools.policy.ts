@@ -1,15 +1,15 @@
+import type { OpenClawConfig } from "../config/config.js";
+import type { AnyAgentTool } from "./pi-tools.types.js";
+import type { SandboxToolPolicy } from "./sandbox.js";
 import { getChannelDock } from "../channels/dock.js";
 import { DEFAULT_SUBAGENT_MAX_SPAWN_DEPTH } from "../config/agent-limits.js";
-import type { OpenClawConfig } from "../config/config.js";
 import { resolveChannelGroupToolsPolicy } from "../config/group-policy.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import { resolveThreadParentSessionKey } from "../sessions/session-key-utils.js";
 import { normalizeMessageChannel } from "../utils/message-channel.js";
 import { resolveAgentConfig, resolveAgentIdFromSessionKey } from "./agent-scope.js";
 import { compileGlobPatterns, matchesAnyGlobPattern } from "./glob-pattern.js";
-import type { AnyAgentTool } from "./pi-tools.types.js";
 import { pickSandboxToolPolicy } from "./sandbox-tool-policy.js";
-import type { SandboxToolPolicy } from "./sandbox.js";
 import { expandToolGroups, normalizeToolName } from "./tool-policy.js";
 
 function makeToolPolicyMatcher(policy: SandboxToolPolicy) {
@@ -55,6 +55,9 @@ const SUBAGENT_TOOL_DENY_ALWAYS = [
   // Memory - pass relevant info in spawn prompt instead
   "memory_search",
   "memory_get",
+  "memory_save_fact",
+  "memory_search_facts",
+  "memory_update_core",
   // Direct session sends - subagents communicate through announce chain
   "sessions_send",
 ];
