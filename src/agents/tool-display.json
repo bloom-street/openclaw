@@ -309,6 +309,11 @@
       "title": "Update Core Memory",
       "detailKeys": ["updates"]
     },
+    "memory_consolidate": {
+      "emoji": "🔄",
+      "title": "Consolidate Facts",
+      "detailKeys": ["scope"]
+    },
     "web_search": {
       "emoji": "🔎",
       "title": "Web Search",

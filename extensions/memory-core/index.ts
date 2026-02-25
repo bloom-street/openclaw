@@ -42,7 +42,7 @@ const memoryCorePlugin = {
           config: ctx.config,
         });
         const tools = [saveFactTool, searchFactsTool, updateCoreTool, consolidateTool].filter(
-          Boolean,
+          (t): t is NonNullable<typeof t> => t != null,
         );
         return tools.length > 0 ? tools : null;
       },
